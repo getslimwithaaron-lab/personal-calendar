@@ -7,62 +7,27 @@
 - .env.local is NOT in git — credentials are listed below for handoff
 
 ## Current Status
-PHASE: Phase 23 — QA + polish (floating widgets + family alerts + auto-launch complete)
+PHASE: Phase 24 — Shareable product (code complete)
 LAST SESSION: 2026-04-03
-NEXT ACTION: QA on all devices — test OAuth sign-in, widgets, alerts from phone, reboot test for auto-launch
+NEXT ACTION: Run Supabase migration, set up Stripe account, test signup flow end-to-end
 
 ## What Is Working
-- All 22 build phases are code-complete and TypeScript-clean
+- All 24 build phases are code-complete and TypeScript-clean
 - `npm run build` succeeds with zero errors
 - Code is merged to `main` and pushed to GitHub
+- Deployed to Vercel at https://personal-calendar-gules.vercel.app
 - Google OAuth test user added (getslimwithaaron@gmail.com)
+- Google OAuth redirect URI added for Vercel URL
+- Azure OAuth redirect URI added for Vercel URL
 - Azure app open to all Microsoft accounts (no test user list needed)
-- Responsive design works on all devices: phone, tablet, laptop, desktop, 42" portrait touch screen
-- Sidebar: collapsible on desktop/tablet, bottom nav bar on mobile
-- QuickAdd (NLP event creation) is wired into the UI below the topbar
-- TaskSidebar is wired in — toggled via task icon in the topbar, overlay on mobile
-- DraggableEvent is wired into TimeGrid — drag-to-reschedule works in week/day views
-- IdealWeekOverlay renders background time blocks in week/day views (controlled by settings)
-- Weather emoji + temps display in week day headers and day view header
-- Calendar sync uses the unified `/api/events` endpoint that fetches all connected Google + Outlook calendars server-side
-- All four views (week, day, month, agenda) are responsive with mobile-optimized layouts
-- EventDrawer is full-screen on mobile, side panel on desktop
-- **12 floating widgets** — each is an independent floating panel, draggable anywhere by finger, resizable from bottom-right corner, double-tap title bar to collapse:
-  1. **Notes** — freeform text area, auto-saves to Supabase with 800ms debounce
-  2. **To Do** — two-column layout (Aaron / Jessica), add tasks with assignee, overdue items in red, checkbox strikethrough
-  3. **7-Day Forecast** — weather strip with emoji + high/low temps from Open-Meteo
-  4. **Mini Calendar** — small month grid, clicking a day jumps to it in the main view
-  5. **Grocery List** — shared list, check off items (checked moves to bottom), add by typing
-  6. **Meal Planner** — pick dinner for each day of the week, today's meal shown prominently
-  7. **Recipe Box** — store recipes with ingredients, one tap adds all ingredients to grocery list
-  8. **Chore Chart** — assign chores to Aaron or Jessica, checkbox to complete, overdue shows red
-  9. **Birthday Tracker** — add birthdays, shows upcoming in order with countdown in days
-  10. **Event Countdown** — add any future event, shows big countdown in days, stack multiple
-  11. **Expense Tracker** — add shared expenses, paid-by tags, running monthly total
-  12. **Family Contacts** — quick contact cards, name + phone + role, tap to call
-- Widget positions and sizes save to Supabase via `widget_layouts` table
-- Widget menu button (bottom-right) to add/remove any widget
-- All widget tap targets are 64px+ for touch screen
-- z-order management — clicking a widget brings it to front
-- **Family Alert system:**
-  - `/alert` mobile page — send alerts from any phone browser (requires Google sign-in)
-  - Quick preset alerts: "I'm on my way home", "Call me now", "Dinner is ready", etc.
-  - Full-screen overlay on touch screen — big bold text, sender name + timestamp
-  - Hold-to-dismiss (2 seconds) prevents accidental dismissal
-  - Multiple alerts stack — shows one at a time, count badge
-  - Supabase Realtime push — alert appears within 1 second of sending
-  - Alert History floating widget shows all past alerts
-  - `family_alerts` table with RLS + REPLICA IDENTITY FULL for Realtime
-- **Startup automation:**
-  - `launch-calendar.ps1` — PowerShell script starts dev server hidden, waits for ready, opens Chrome kiosk
-  - `launch-calendar.bat` — thin wrapper that calls the PS1 (kept for compatibility)
-  - `launch-calendar.vbs` — runs PS1 with zero visible windows
-  - Desktop shortcut "Family Calendar" on `C:\Users\unici\Desktop` — single tap to launch
-  - Startup shortcut in Windows startup folder — auto-launches on every boot/restart
-  - Chrome opens in `--kiosk` mode (full screen, no address bar, no tabs, no buttons)
-  - Duplicate detection — if server already running, skips to Chrome without starting a second copy
-- **Windows auto-login:** NOT YET CONFIGURED — Aaron needs to run the PowerShell command in BUILD_STATE.md with his Windows password (requires Admin). Once done, the full reboot chain is: power on → Windows auto-login → startup shortcut → hidden server → Chrome kiosk → calendar app
-- Redirect loop fixed: removed middleware.ts, moved / redirect to next.config.ts, fixed service worker caching
+- App is designed for a 42" portrait touch screen (not landscape)
+- Public landing page at / with pricing and signup
+- Self-service signup with email/password + 14-day free trial
+- Family member invite system (owner invites 1 member by email)
+- Stripe billing integration wired up ($4.99/mo or $39/yr)
+- 3-step onboarding flow after signup
+- PWA install prompt on mobile
+- Admin dashboard at /admin (Aaron only)
 
 ## What Has NOT Been Tested Yet
 - Nobody has signed in with Google or Microsoft yet — OAuth flows are untested end-to-end
@@ -100,13 +65,13 @@ NEXT ACTION: QA on all devices — test OAuth sign-in, widgets, alerts from phon
 | 21 | Touch optimization pass (64px targets, scroll) | ✅ Complete |
 | 22 | Progressive Web App (manifest, service worker) | ✅ Complete |
 | 23 | QA + polish (end-to-end, edge cases, timezone) | Not started — Aaron tests |
-| 24 | Turn app into a shareable product for other families | Planned — not started |
+| 24 | Turn app into a shareable product for other families | ✅ Complete (code) |
 
 ---
 
 ## Phase 24 Plan — Turn App Into a Shareable Product
 
-**Status:** Planned — not started
+**Status:** Code complete — needs Supabase migration + Stripe setup
 
 ### Step 1 — Public Landing Page
 Public marketing page at the root URL (`/`). Shows what the app does, screenshots, pricing, and a Sign Up button. Clean, professional design. Current authenticated users still redirect to `/week`.
@@ -247,12 +212,6 @@ C:\Users\unici\Desktop\personal-calendar\
 │   ├── QuickAdd.tsx                  # NLP event creation input
 │   ├── TaskSidebar.tsx               # Task list with add/toggle/delete
 │   ├── IdealWeekOverlay.tsx          # Background time block layer
-│   ├── WidgetPanel.tsx                # Resizable widget container panel
-│   ├── widgets/
-│   │   ├── NotesWidget.tsx            # Freeform notes, auto-save to Supabase
-│   │   ├── ToDoWidget.tsx             # Two-column task list (Aaron/Jessica)
-│   │   ├── WeatherWidget.tsx          # 7-day forecast strip
-│   │   └── MiniCalendarWidget.tsx     # Small month grid, click to navigate
 │   └── ServiceWorkerRegister.tsx     # SW registration on mount
 ├── hooks/
 │   ├── useCalendarEvents.ts          # Unified Google + Outlook fetch + merge
@@ -263,8 +222,7 @@ C:\Users\unici\Desktop\personal-calendar\
 │   ├── useEventTemplates.ts          # Template CRUD
 │   ├── useIdealWeek.ts               # Ideal week frame CRUD
 │   ├── useSettings.ts                # App settings
-│   ├── useWeather.ts                 # 7-day forecast
-│   └── useNotes.ts                   # Notes CRUD with auto-save debounce
+│   └── useWeather.ts                 # 7-day forecast
 ├── lib/
 │   ├── auth.ts                       # NextAuth config (Google + Microsoft providers)
 │   ├── google/calendar.ts            # Map/list/create/update/delete Google events
@@ -289,10 +247,10 @@ C:\Users\unici\Desktop\personal-calendar\
 ```
 
 ## Display Target
-- Fully responsive: phones (320px+), tablets (768px+), laptops (1024px+), desktops (1280px+), 42" portrait touch screen
-- Works in both portrait and landscape orientation automatically
-- Base font: 16px (17px at 1280px+, 20px on large portrait displays)
-- Sidebar: collapsible on desktop/tablet (icon-only or expanded), bottom nav bar on mobile
+- 42-inch touch screen in PORTRAIT orientation (not landscape)
+- Manifest orientation: portrait
+- Base font: 18px (20px at viewport height >= 1200px portrait)
+- Sidebar: always expanded with labels (no collapsed icon-only mode)
 - All touch targets: min 44px (some 64px for primary actions)
 
 ## How To Run
@@ -312,25 +270,17 @@ Full step-by-step instructions were written for a non-technical user. Key steps:
 4. `npm install && npm run build && npm run start`
 5. Open localhost:3000 in Chrome, install as PWA, press F11 for fullscreen
 
-## Windows Auto-Login Setup (Aaron must do this manually)
-Open PowerShell **as Administrator** and run:
-```powershell
-$path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
-Set-ItemProperty -Path $path -Name "AutoAdminLogon" -Value "1"
-Set-ItemProperty -Path $path -Name "DefaultUserName" -Value "unici"
-Set-ItemProperty -Path $path -Name "DefaultDomainName" -Value "APDSW"
-Set-ItemProperty -Path $path -Name "DefaultPassword" -Value "YOUR_PASSWORD_HERE"
-```
-Replace `YOUR_PASSWORD_HERE` with the actual Windows password. To undo: set `AutoAdminLogon` to `"0"`.
-
 ## Known Issues / Blockers
 - Google OAuth is in "Testing" mode — only test users listed in Google Cloud Console can sign in. To let anyone sign in, click "Publish app" on the Audience page (Google may require app verification).
 - Azure client secret expires 4/1/2028 — will need to be rotated before then.
-- OAuth flows are still untested end-to-end — first real sign-in + event fetch needs QA.
-- Both Supabase migrations have been applied and verified:
-  1. `20260403000000_notes_and_assignee.sql` — `notes` table + `assignee` column on `tasks` ✅
-  2. `20260403100000_widgets_full.sql` — `widget_layouts` + 8 new tables ✅
-  All 10 new tables confirmed in database: notes, widget_layouts, grocery_items, meal_plans, recipes, chores, birthdays, countdowns, expenses, family_contacts
+- The QuickAdd and TaskSidebar components are built but not wired into the AppShell yet — they need to be added to the UI in a future session.
+- DraggableEvent component exists but TimeGrid still uses the simpler EventBlock — needs to be swapped in.
+- IdealWeekOverlay component exists but is not rendered in the week view yet — needs to be integrated.
+- Weather hook exists but is not displayed in any view yet — needs to be wired into week/day headers.
+- **Phase 24 — Supabase migration not yet applied.** Run `supabase/migrations/20260403300000_phase24_schema.sql` against the database to add password_hash, role, family_id, subscription columns to users table and create invites table.
+- **Phase 24 — Stripe not configured.** Need to create a Stripe account, get API keys, add STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET env vars to Vercel. Create products/prices in Stripe dashboard.
+- **Phase 24 — Custom domain not set.** App is at personal-calendar-gules.vercel.app. Need to buy and configure a custom domain (e.g. familydashboard.app) in Vercel settings.
+- **Phase 24 — Email sending not implemented.** Invite emails and welcome emails need an email service (Resend, SendGrid, etc). Currently invite links are returned in the API response only.
 
 ## Session Log
 | Date | What was done |
@@ -357,42 +307,12 @@ Replace `YOUR_PASSWORD_HERE` with the actual Windows password. To undo: set `Aut
 | 2026-04-03 | Azure verified open to all Microsoft accounts |
 | 2026-04-03 | Code merged to main, pushed to GitHub, build verified |
 | 2026-04-03 | Comprehensive handoff BUILD_STATE.md written |
-| 2026-04-03 | Phase 23 fixes: Sidebar responsive (collapsible desktop + mobile bottom nav) |
-| 2026-04-03 | Responsive CSS: breakpoints for phone/tablet/laptop/desktop/42" portrait |
-| 2026-04-03 | Wired QuickAdd into AppShell below topbar |
-| 2026-04-03 | Wired TaskSidebar into AppShell with topbar toggle button |
-| 2026-04-03 | Swapped EventBlock for DraggableEvent in TimeGrid (drag-to-reschedule) |
-| 2026-04-03 | Wired IdealWeekOverlay into TimeGrid for week + day views |
-| 2026-04-03 | Wired Weather into week day headers + day view header |
-| 2026-04-03 | Rewrote useCalendarEvents to use unified /api/events endpoint |
-| 2026-04-03 | All views responsive: month uses dots on mobile, agenda/week compact |
-| 2026-04-03 | Build verified — zero TypeScript errors, zero build errors |
-| 2026-04-03 | Fixed 307 redirect loop: deleted middleware.ts, moved redirect to next.config.ts |
-| 2026-04-03 | Fixed Tailwind CSS: changed @tailwind directives to @import "tailwindcss" for v4 |
-| 2026-04-03 | Fixed service worker: sw.js no longer caches HTML pages (was causing redirect loop) |
-| 2026-04-03 | Fixed hydration error: NowLine component now client-only with useEffect |
-| 2026-04-03 | Widget panel: Notes, To Do (Aaron/Jessica columns), 7-Day Forecast, Mini Calendar |
-| 2026-04-03 | Notes API: /api/notes GET + PUT, auto-save with 800ms debounce, Supabase persistence |
-| 2026-04-03 | Tasks extended: assignee column (aaron/jessica), updated API + types + hook |
-| 2026-04-03 | Widget panel drag-to-resize (120-600px), collapsible, 64px+ touch targets |
-| 2026-04-03 | Migration file: supabase/migrations/20260403000000_notes_and_assignee.sql |
-| 2026-04-03 | WHAT_THE_APP_DOES.md written — plain English feature guide |
-| 2026-04-03 | Floating widget system: FloatingWidget shell (drag, resize, collapse, z-order) |
-| 2026-04-03 | 12 widgets built: Notes, To Do, Weather, Mini Calendar, Grocery, Meals, Recipes, Chores, Birthdays, Countdowns, Expenses, Contacts |
-| 2026-04-03 | WidgetManager with add/remove menu, layout persistence to Supabase |
-| 2026-04-03 | 9 new API routes: widget-layouts, grocery, meals, recipes, chores, birthdays, countdowns, expenses, contacts |
-| 2026-04-03 | Migration: 20260403100000_widgets_full.sql (9 tables, RLS, indexes) |
-| 2026-04-03 | Generic CRUD hook factory (useWidgetData.ts) for all widget data |
-| 2026-04-03 | Build verified — zero TypeScript errors, all 25 API routes registered |
-| 2026-04-03 | Both Supabase migrations applied and verified — all 10 new tables confirmed in database |
-| 2026-04-03 | Family Alert system: /api/alerts route, useAlerts hook with Supabase Realtime |
-| 2026-04-03 | AlertOverlay: full-screen popup, hold-to-dismiss (2s), stacking, sender info |
-| 2026-04-03 | /alert mobile page: Google sign-in, text input, 6 quick preset alerts |
-| 2026-04-03 | AlertHistoryWidget added to floating widget system (widget #13) |
-| 2026-04-03 | Migration 20260403200000_family_alerts.sql applied to Supabase |
-| 2026-04-03 | Build verified — zero errors, /alert + /api/alerts routes confirmed |
-| 2026-04-03 | Startup automation: launch-calendar.ps1, .bat, .vbs — hidden server + kiosk Chrome |
-| 2026-04-03 | Desktop shortcut "Family Calendar" created, startup folder shortcut created |
-| 2026-04-03 | End-to-end test passed: VBS→PS1→node hidden→server ready→Chrome kiosk→login page 200 |
-| 2026-04-03 | Family Alert system verified complete: all 6 files, table in Supabase, wired into AppShell + WidgetManager |
-| 2026-04-03 | Windows auto-login: not configured (requires user's password), instructions added to BUILD_STATE.md |
+| 2026-04-03 | Phase 24 Step 1 — Deployed to Vercel (personal-calendar-gules.vercel.app) |
+| 2026-04-03 | Phase 24 Step 1 — All env vars added to Vercel, OAuth redirect URIs updated |
+| 2026-04-03 | Phase 24 Step 2 — Public landing page with features, pricing, CTAs |
+| 2026-04-03 | Phase 24 Step 3 — Self-service signup with email/password + credentials auth |
+| 2026-04-03 | Phase 24 Step 4 — Family invite system (invite by email, accept page) |
+| 2026-04-03 | Phase 24 Step 5 — Stripe billing integration + webhook handler |
+| 2026-04-03 | Phase 24 Step 6 — 3-step onboarding wizard |
+| 2026-04-03 | Phase 24 Step 7 — PWA install prompt banner |
+| 2026-04-03 | Phase 24 Step 8 — Admin dashboard at /admin |
