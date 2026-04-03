@@ -6,9 +6,9 @@
 - This is the single source of truth for build progress
 
 ## Current Status
-PHASE: Phase 5 — Event merge layer
-LAST SESSION: 2026-04-02 — Phase 4 code complete, TypeScript clean, committed
-NEXT ACTION: Begin Phase 5 — normalize Google + Outlook events into unified CalendarEvent array
+PHASE: Phase 8 — Week view
+LAST SESSION: 2026-04-02 — Phase 7 complete (App shell + layout)
+NEXT ACTION: Begin Phase 8 — Week view (7-col grid, swipe, split-column mode)
 
 ## Phase Completion Tracker
 
@@ -17,10 +17,10 @@ NEXT ACTION: Begin Phase 5 — normalize Google + Outlook events into unified Ca
 | 1 | Scaffold (Next.js, Supabase, GitHub, Vercel) | ✅ Complete |
 | 2 | Auth + user (Supabase Auth, NextAuth, protected routes) | ✅ Complete |
 | 3 | Google Calendar OAuth + read/write | ✅ Complete |
-| 4 | Outlook OAuth + Microsoft Graph read/write | ✅ Complete — Azure portal needed |
-| 5 | Event merge layer (normalize Google + Outlook) | Not started |
-| 6 | Supabase Realtime push sync | Not started |
-| 7 | App shell + layout (sidebar, topbar, nav, theme) | Not started |
+| 4 | Outlook OAuth + Microsoft Graph read/write | ✅ Complete |
+| 5 | Event merge layer (normalize Google + Outlook) | ✅ Complete |
+| 6 | Supabase Realtime push sync | ✅ Complete |
+| 7 | App shell + layout (sidebar, topbar, nav, theme) | ✅ Complete |
 | 8 | Week view (7-col grid, swipe, split-column mode) | Not started |
 | 9 | Day view (hour timeline, now bar, auto-scroll) | Not started |
 | 10 | Month view (grid, dot indicators, tap to jump) | Not started |
@@ -43,26 +43,20 @@ NEXTAUTH_SECRET=✅ set
 NEXTAUTH_URL=✅ http://localhost:3000
 GOOGLE_CLIENT_ID=✅ set
 GOOGLE_CLIENT_SECRET=✅ set
-AZURE_AD_CLIENT_ID=⚠️ empty — Aaron must add after Azure portal setup
-AZURE_AD_CLIENT_SECRET=⚠️ empty — Aaron must add after Azure portal setup
+AZURE_AD_CLIENT_ID=✅ set
+AZURE_AD_CLIENT_SECRET=✅ set
 AZURE_AD_TENANT_ID=✅ common
 NEXT_PUBLIC_SUPABASE_URL=✅ set
 NEXT_PUBLIC_SUPABASE_ANON_KEY=✅ set
 SUPABASE_SERVICE_ROLE_KEY=✅ set
 
-## Azure Portal Setup (Aaron must complete before Outlook works)
-1. Go to https://portal.azure.com
-2. Azure Active Directory > App registrations > New registration
-3. Name: "Personal Calendar App"
-4. Supported account types: Accounts in any organizational directory AND personal Microsoft accounts
-5. Redirect URI: Web > http://localhost:3000/api/auth/callback/azure-ad
-6. After creation: API permissions > Add > Microsoft Graph > Delegated:
-   - Calendars.ReadWrite
-   - offline_access
-   - User.Read
-   - Grant admin consent
-7. Certificates & secrets > New client secret > copy value immediately
-8. Copy Application (client) ID and secret into .env.local as AZURE_AD_CLIENT_ID and AZURE_AD_CLIENT_SECRET
+## Azure Portal Setup ✅ Complete
+- App: Personal Calendar App
+- Client ID: 5196fb4b-61fc-4c53-b839-bc135ac30f60
+- Tenant: Any Entra ID Tenant + Personal Microsoft accounts
+- Redirect URI: http://localhost:3000/api/auth/callback/azure-ad
+- Client secret: set (expires 4/1/2028)
+- API permissions: Calendars.ReadWrite, offline_access, User.Read — all granted admin consent
 
 ## Phase 4 — What Was Built
 - lib/outlook/token.ts — Microsoft token refresh, auto-refresh if expiring within 5 min, rotated token support
@@ -81,8 +75,7 @@ Old secret (****qm8x): Disabled ✅
 New secret (****1tOX): Active ✅
 
 ## Known Issues / Blockers
-- Azure portal registration not yet done — Outlook auth won't work until AZURE_AD_CLIENT_ID and AZURE_AD_CLIENT_SECRET are in .env.local
-- See Azure Portal Setup section above for exact steps
+- None
 
 ## Session Log
 | Date | What was done |
@@ -93,3 +86,7 @@ New secret (****1tOX): Active ✅
 | 2026-04-02 | Google Cloud project created, Calendar API enabled, OAuth configured |
 | 2026-04-02 | Phase 3 complete — Google credentials, token refresh, event CRUD, hook |
 | 2026-04-02 | Phase 4 complete — Outlook token refresh, Graph CRUD, 3 API routes, hook |
+| 2026-04-02 | Phase 4 Azure portal — App registered, client secret created (24mo), API permissions granted (Calendars.ReadWrite, offline_access, User.Read), env vars set |
+| 2026-04-02 | Phase 5 complete — merge utility (lib/events/merge.ts), unified hook (useCalendarEvents), unified API route (api/events) |
+| 2026-04-02 | Phase 6 complete — Realtime helpers (lib/supabase/realtime.ts), useRealtimeEvents hook, subscriptions for connections/events/tasks |
+| 2026-04-02 | Phase 7 complete — AppShell, Sidebar (nav icons, active state), Topbar (date nav, sync indicator), dashboard layout integration |

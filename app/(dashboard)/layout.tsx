@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
+import { AppShell } from '@/components/AppShell'
 
 // ── Dashboard layout — server component ───────────────────────────────────────
 // Validates session on every dashboard page render.
@@ -15,9 +16,5 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-white">
-      {children}
-    </div>
-  )
+  return <AppShell>{children}</AppShell>
 }
