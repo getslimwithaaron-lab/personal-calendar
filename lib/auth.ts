@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 import MicrosoftEntraID from 'next-auth/providers/microsoft-entra-id'
+import { credentialsProvider } from './authCredentials'
 import { createClient } from '@supabase/supabase-js'
 
 // ── Supabase admin (service role) — server only, never exposed to client ──────
@@ -71,6 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         },
       },
     }),
+    credentialsProvider,
   ],
 
   // ── Callbacks ────────────────────────────────────────────────────────────────

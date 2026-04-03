@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"fullscreen\\\\|screen\\\\|F11\" C:/Users/unici/Desktop/personal-calendar/.claude/worktrees/nice-moore --include=*.tsx --include=*.ts --include=*.jsx --include=*.js)",
+      "Bash(npx vercel:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\unici\\\\Desktop\\\\personal-calendar\\\\app\"\" | grep -E \"^-)",
+      "Bash(^d \")",
+      "Bash(ls -la \"/c/Users/unici/Desktop/personal-calendar/app/\\(dashboard\\)/\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
