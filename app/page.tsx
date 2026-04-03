@@ -1,10 +1,25 @@
-import Link from 'next/link'
-import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+'use client'
 
-export default async function LandingPage() {
-  const session = await auth()
-  if (session) redirect('/week')
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
+export default function LandingPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (status === 'authenticated') router.replace('/week')
+  }, [status, router])
+
+  if (status === 'loading') {
+    return <div className="min-h-screen bg-slate-950" />
+  }
+
+  if (status === 'authenticated') {
+    return <div className="min-h-screen bg-slate-950" />
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -30,7 +45,7 @@ export default async function LandingPage() {
         </h1>
         <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
           A shared dashboard for busy families. See everyone&apos;s schedule, manage grocery lists,
-          track chores, plan meals, and stay in sync — all from one beautiful screen.
+          track chores, plan meals, and stay in sync &mdash; all from one beautiful screen.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/signup" className="w-full sm:w-auto text-center font-semibold bg-blue-600 hover:bg-blue-500 rounded-xl px-8 py-4 text-lg transition-colors">
@@ -118,7 +133,7 @@ export default async function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 text-center text-sm text-slate-500">
-        <p>FamilyCal {'\u2014'} Built for families who want to stay in sync.</p>
+        <p>FamilyCal &mdash; Built for families who want to stay in sync.</p>
       </footer>
     </div>
   )
