@@ -7,17 +7,27 @@
 - .env.local is NOT in git — credentials are listed below for handoff
 
 ## Current Status
-PHASE: Phase 23 — QA + polish (Aaron tests)
+PHASE: Phase 24 — Shareable product (code complete)
 LAST SESSION: 2026-04-03
-NEXT ACTION: Aaron runs QA on the touch screen PC, reports bugs, then Claude fixes them
+NEXT ACTION: Run Supabase migration, set up Stripe account, test signup flow end-to-end
 
 ## What Is Working
-- All 22 build phases are code-complete and TypeScript-clean
+- All 24 build phases are code-complete and TypeScript-clean
 - `npm run build` succeeds with zero errors
 - Code is merged to `main` and pushed to GitHub
+- Deployed to Vercel at https://personal-calendar-gules.vercel.app
 - Google OAuth test user added (getslimwithaaron@gmail.com)
+- Google OAuth redirect URI added for Vercel URL
+- Azure OAuth redirect URI added for Vercel URL
 - Azure app open to all Microsoft accounts (no test user list needed)
 - App is designed for a 42" portrait touch screen (not landscape)
+- Public landing page at / with pricing and signup
+- Self-service signup with email/password + 14-day free trial
+- Family member invite system (owner invites 1 member by email)
+- Stripe billing integration wired up ($4.99/mo or $39/yr)
+- 3-step onboarding flow after signup
+- PWA install prompt on mobile
+- Admin dashboard at /admin (Aaron only)
 
 ## What Has NOT Been Tested Yet
 - Nobody has signed in with Google or Microsoft yet — OAuth flows are untested end-to-end
@@ -55,13 +65,13 @@ NEXT ACTION: Aaron runs QA on the touch screen PC, reports bugs, then Claude fix
 | 21 | Touch optimization pass (64px targets, scroll) | ✅ Complete |
 | 22 | Progressive Web App (manifest, service worker) | ✅ Complete |
 | 23 | QA + polish (end-to-end, edge cases, timezone) | Not started — Aaron tests |
-| 24 | Turn app into a shareable product for other families | Planned — not started |
+| 24 | Turn app into a shareable product for other families | ✅ Complete (code) |
 
 ---
 
 ## Phase 24 Plan — Turn App Into a Shareable Product
 
-**Status:** Planned — not started
+**Status:** Code complete — needs Supabase migration + Stripe setup
 
 ### Step 1 — Public Landing Page
 Public marketing page at the root URL (`/`). Shows what the app does, screenshots, pricing, and a Sign Up button. Clean, professional design. Current authenticated users still redirect to `/week`.
@@ -267,6 +277,10 @@ Full step-by-step instructions were written for a non-technical user. Key steps:
 - DraggableEvent component exists but TimeGrid still uses the simpler EventBlock — needs to be swapped in.
 - IdealWeekOverlay component exists but is not rendered in the week view yet — needs to be integrated.
 - Weather hook exists but is not displayed in any view yet — needs to be wired into week/day headers.
+- **Phase 24 — Supabase migration not yet applied.** Run `supabase/migrations/20260403300000_phase24_schema.sql` against the database to add password_hash, role, family_id, subscription columns to users table and create invites table.
+- **Phase 24 — Stripe not configured.** Need to create a Stripe account, get API keys, add STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET env vars to Vercel. Create products/prices in Stripe dashboard.
+- **Phase 24 — Custom domain not set.** App is at personal-calendar-gules.vercel.app. Need to buy and configure a custom domain (e.g. familydashboard.app) in Vercel settings.
+- **Phase 24 — Email sending not implemented.** Invite emails and welcome emails need an email service (Resend, SendGrid, etc). Currently invite links are returned in the API response only.
 
 ## Session Log
 | Date | What was done |
@@ -293,3 +307,12 @@ Full step-by-step instructions were written for a non-technical user. Key steps:
 | 2026-04-03 | Azure verified open to all Microsoft accounts |
 | 2026-04-03 | Code merged to main, pushed to GitHub, build verified |
 | 2026-04-03 | Comprehensive handoff BUILD_STATE.md written |
+| 2026-04-03 | Phase 24 Step 1 — Deployed to Vercel (personal-calendar-gules.vercel.app) |
+| 2026-04-03 | Phase 24 Step 1 — All env vars added to Vercel, OAuth redirect URIs updated |
+| 2026-04-03 | Phase 24 Step 2 — Public landing page with features, pricing, CTAs |
+| 2026-04-03 | Phase 24 Step 3 — Self-service signup with email/password + credentials auth |
+| 2026-04-03 | Phase 24 Step 4 — Family invite system (invite by email, accept page) |
+| 2026-04-03 | Phase 24 Step 5 — Stripe billing integration + webhook handler |
+| 2026-04-03 | Phase 24 Step 6 — 3-step onboarding wizard |
+| 2026-04-03 | Phase 24 Step 7 — PWA install prompt banner |
+| 2026-04-03 | Phase 24 Step 8 — Admin dashboard at /admin |
