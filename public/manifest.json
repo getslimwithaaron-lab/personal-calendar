@@ -4,7 +4,7 @@
   "description": "Personal touch-screen calendar dashboard",
   "start_url": "/week",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [

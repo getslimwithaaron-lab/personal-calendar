@@ -14,7 +14,14 @@ html, body {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: pan-y;
-  font-size: 16px; /* prevents iOS zoom on input focus */
+  font-size: 18px; /* larger base for 42" touch display */
+}
+
+/* ── Large portrait display (42" in portrait ≈ 1080×1920 or 2160×3840) ───── */
+@media (min-height: 1200px) and (orientation: portrait) {
+  html, body {
+    font-size: 20px;
+  }
 }
 
 /* ── Touch targets — apply via utility class, not globally ─────────────────── */
