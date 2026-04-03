@@ -25,11 +25,11 @@ export function useTasks() {
 
   useEffect(() => { fetchTasks() }, [fetchTasks])
 
-  const addTask = useCallback(async (title: string, dueDate?: string) => {
+  const addTask = useCallback(async (title: string, dueDate?: string, assignee?: 'aaron' | 'jessica') => {
     const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, dueDate }),
+      body: JSON.stringify({ title, dueDate, assignee: assignee ?? 'aaron' }),
     })
     if (res.ok) fetchTasks()
     return res.ok

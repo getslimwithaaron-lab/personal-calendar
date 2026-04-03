@@ -55,6 +55,7 @@ export interface Task {
   completedAt?: string
   color?: string
   sortOrder: number
+  assignee: 'aaron' | 'jessica'
 }
 
 // ------ Ideal Week Frame ------

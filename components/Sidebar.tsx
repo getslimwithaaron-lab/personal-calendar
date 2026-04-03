@@ -11,44 +11,88 @@ const NAV_ITEMS = [
   { href: '/settings', label: 'Settings', icon: SettingsIcon },
 ] as const
 
-export function Sidebar() {
+interface SidebarProps {
+  collapsed?: boolean
+  onToggle?: () => void
+}
+
+export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="flex flex-col w-56 shrink-0 bg-slate-900 border-r border-slate-800 h-full">
-      {/* Logo */}
-      <div className="flex items-center gap-2 px-4 h-14 border-b border-slate-800">
-        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-bold">
-          C
+    <>
+      {/* Desktop / tablet sidebar */}
+      <nav
+        className={`
+          hidden md:flex flex-col shrink-0 bg-slate-900 border-r border-slate-800 h-full
+          transition-[width] duration-200 ease-in-out
+          ${collapsed ? 'w-16' : 'w-56'}
+        `}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2 px-3 h-14 border-b border-slate-800">
+          <button
+            onClick={onToggle}
+            className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-sm font-bold shrink-0 hover:bg-blue-500 transition-colors"
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            C
+          </button>
+          {!collapsed && (
+            <span className="text-sm font-semibold text-white tracking-tight whitespace-nowrap overflow-hidden">
+              Calendar
+            </span>
+          )}
         </div>
-        <span className="block text-sm font-semibold text-white tracking-tight">
-          Calendar
-        </span>
-      </div>
 
-      {/* Nav links */}
-      <div className="flex-1 flex flex-col gap-1 py-3 px-2">
-        {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + '/')
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                transition-colors min-h-[44px]
-                ${active
-                  ? 'bg-blue-600/20 text-blue-400'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800'}
-              `}
-            >
-              <Icon className="w-5 h-5 shrink-0" />
-              <span className="block">{label}</span>
-            </Link>
-          )
-        })}
-      </div>
-    </nav>
+        {/* Nav links */}
+        <div className="flex-1 flex flex-col gap-1 py-3 px-2">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href || pathname.startsWith(href + '/')
+            return (
+              <Link
+                key={href}
+                href={href}
+                title={collapsed ? label : undefined}
+                className={`
+                  flex items-center rounded-lg text-sm font-medium
+                  transition-colors min-h-[44px]
+                  ${collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2.5'}
+                  ${active
+                    ? 'bg-blue-600/20 text-blue-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'}
+                `}
+              >
+                <Icon className="w-5 h-5 shrink-0" />
+                {!collapsed && <span className="truncate">{label}</span>}
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+
+      {/* Mobile bottom nav bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-slate-900 border-t border-slate-800 safe-bottom">
+        <div className="flex items-center justify-around h-14">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href || pathname.startsWith(href + '/')
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`
+                  flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg min-w-[48px] min-h-[44px]
+                  ${active ? 'text-blue-400' : 'text-slate-500'}
+                `}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] font-medium">{label}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    </>
   )
 }
 

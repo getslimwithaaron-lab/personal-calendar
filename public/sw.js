@@ -1,25 +1,21 @@
 // Service Worker — Personal Calendar App
-// Caches app shell for offline access, network-first for API calls
+// Caches static assets only. Never caches HTML navigation requests.
 
-const CACHE_NAME = 'calendar-v1'
-const SHELL_ASSETS = [
-  '/',
-  '/week',
-  '/day',
-  '/month',
-  '/agenda',
+const CACHE_NAME = 'calendar-v2'
+const STATIC_ASSETS = [
   '/manifest.json',
+  '/icons/icon-192.svg',
 ]
 
-// Install — pre-cache app shell
+// Install — pre-cache static assets only (never pages)
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
   )
   self.skipWaiting()
 })
 
-// Activate — clean old caches
+// Activate — delete ALL old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -29,35 +25,19 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
-// Fetch — network first for API, cache first for shell
+// Fetch — only cache static assets, never HTML/navigation
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url)
 
-  // Skip non-GET and auth requests
+  // Never intercept non-GET, auth, or navigation requests
   if (event.request.method !== 'GET') return
-  if (url.pathname.startsWith('/api/auth')) return
+  if (url.pathname.startsWith('/api/')) return
+  if (event.request.mode === 'navigate') return
 
-  // API calls — network first, no cache fallback
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() => new Response(JSON.stringify({ error: 'Offline' }), {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' },
-      }))
-    )
-    return
-  }
-
-  // App shell — stale-while-revalidate
+  // Static assets — cache first
   event.respondWith(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      const cached = await cache.match(event.request)
-      const fetchPromise = fetch(event.request).then((response) => {
-        if (response.ok) cache.put(event.request, response.clone())
-        return response
-      }).catch(() => cached)
-
-      return cached || fetchPromise
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request)
     })
   )
 })

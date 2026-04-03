@@ -31,6 +31,7 @@ export async function GET() {
     completedAt: t.completed_at,
     color: t.color,
     sortOrder: t.sort_order,
+    assignee: t.assignee ?? 'aaron',
   }))
 
   return NextResponse.json({ tasks })
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
     due_date: body.dueDate ?? null,
     color: body.color ?? null,
     sort_order: body.sortOrder ?? 0,
+    assignee: body.assignee ?? 'aaron',
   }).select().single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -70,6 +72,7 @@ export async function PATCH(req: NextRequest) {
   if (updates.scheduledEnd !== undefined) dbUpdates.scheduled_end = updates.scheduledEnd
   if (updates.sortOrder !== undefined) dbUpdates.sort_order = updates.sortOrder
   if (updates.dueDate !== undefined) dbUpdates.due_date = updates.dueDate
+  if (updates.assignee !== undefined) dbUpdates.assignee = updates.assignee
 
   const { error } = await sb().from('tasks').update(dbUpdates).eq('id', id).eq('user_id', session.supabaseUserId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

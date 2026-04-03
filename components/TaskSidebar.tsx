@@ -26,51 +26,63 @@ export function TaskSidebar({ open, onClose }: TaskSidebarProps) {
   if (!open) return null
 
   return (
-    <div className="w-72 shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-14 border-b border-slate-800">
-        <h2 className="font-semibold text-sm">Tasks</h2>
-        <button onClick={onClose} className="p-1 rounded hover:bg-slate-800 min-h-[36px] min-w-[36px] flex items-center justify-center">
-          <XIcon className="w-4 h-4 text-slate-400" />
-        </button>
-      </div>
+    <>
+      {/* Backdrop on mobile */}
+      <div
+        className="md:hidden fixed inset-0 bg-black/50 z-30"
+        onClick={onClose}
+      />
 
-      {/* Add task */}
-      <div className="px-3 py-2 border-b border-slate-800/50">
-        <div className="flex items-center gap-2">
-          <input
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') handleAdd() }}
-            placeholder="Add a task..."
-            className="flex-1 text-sm bg-transparent text-white placeholder-slate-500 outline-none min-h-[36px]"
-          />
-          {newTitle && (
-            <button onClick={handleAdd} className="text-xs text-blue-400 px-2 py-1 min-h-[32px]">Add</button>
+      {/* Panel */}
+      <div className={`
+        fixed md:relative right-0 top-0 bottom-0 z-40 md:z-auto
+        w-72 sm:w-80 shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full
+      `}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 sm:px-4 h-14 border-b border-slate-800">
+          <h2 className="font-semibold text-sm">Tasks</h2>
+          <button onClick={onClose} className="p-1 rounded hover:bg-slate-800 min-h-[36px] min-w-[36px] flex items-center justify-center">
+            <XIcon className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
+
+        {/* Add task */}
+        <div className="px-3 py-2 border-b border-slate-800/50">
+          <div className="flex items-center gap-2">
+            <input
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleAdd() }}
+              placeholder="Add a task..."
+              className="flex-1 text-sm bg-transparent text-white placeholder-slate-500 outline-none min-h-[36px]"
+            />
+            {newTitle && (
+              <button onClick={handleAdd} className="text-xs text-blue-400 px-2 py-1 min-h-[32px]">Add</button>
+            )}
+          </div>
+        </div>
+
+        {/* Task list */}
+        <div className="flex-1 overflow-y-auto scroll-container px-2 py-2">
+          {pending.length === 0 && completed.length === 0 && (
+            <p className="text-center text-sm text-slate-600 py-8">No tasks yet</p>
+          )}
+
+          {pending.map(task => (
+            <TaskRow key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
+          ))}
+
+          {completed.length > 0 && (
+            <>
+              <div className="text-xs text-slate-600 mt-4 mb-1 px-2">Completed ({completed.length})</div>
+              {completed.map(task => (
+                <TaskRow key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
+              ))}
+            </>
           )}
         </div>
       </div>
-
-      {/* Task list */}
-      <div className="flex-1 overflow-y-auto scroll-container px-2 py-2">
-        {pending.length === 0 && completed.length === 0 && (
-          <p className="text-center text-sm text-slate-600 py-8">No tasks yet</p>
-        )}
-
-        {pending.map(task => (
-          <TaskRow key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
-        ))}
-
-        {completed.length > 0 && (
-          <>
-            <div className="text-xs text-slate-600 mt-4 mb-1 px-2">Completed ({completed.length})</div>
-            {completed.map(task => (
-              <TaskRow key={task.id} task={task} onToggle={toggleTask} onDelete={deleteTask} />
-            ))}
-          </>
-        )}
-      </div>
-    </div>
+    </>
   )
 }
 
@@ -87,7 +99,7 @@ function TaskRow({
     <div className="flex items-start gap-2 p-2 rounded-lg hover:bg-slate-800/50 group">
       <button
         onClick={() => onToggle(task.id, !task.completed)}
-        className={`w-4 h-4 mt-0.5 rounded border shrink-0 flex items-center justify-center min-h-[16px] min-w-[16px]
+        className={`w-5 h-5 mt-0.5 rounded border shrink-0 flex items-center justify-center min-h-[20px] min-w-[20px]
           ${task.completed ? 'bg-blue-600 border-blue-600' : 'border-slate-600'}`}
       >
         {task.completed && <CheckIcon className="w-3 h-3 text-white" />}
