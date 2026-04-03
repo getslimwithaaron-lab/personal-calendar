@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { CalendarProvider, useCalendarContext } from './CalendarProvider'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
+import { EventDrawer } from './EventDrawer'
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -33,6 +34,7 @@ function ShellInner({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+      <EventDrawer />
     </div>
   )
 }

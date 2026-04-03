@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -13,20 +14,68 @@ html, body {
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: pan-y;
-  font-size: 16px;
+  font-size: 16px; /* prevents iOS zoom on input focus */
 }
 
-button, a, [role="button"] {
+/* ── Touch targets — apply via utility class, not globally ─────────────────── */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-lg {
   min-height: 64px;
   min-width: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
 }
 
+/* ── Scrollable containers ─────────────────────────────────────────────────── */
 .scroll-container {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.3) transparent;
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.3);
+  border-radius: 3px;
+}
+
+/* ── Prevent text selection during drag ───────────────────────────────────── */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Safe area padding for mobile notches ──────────────────────────────────── */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left { padding-left: env(safe-area-inset-left); }
+.safe-right { padding-right: env(safe-area-inset-right); }
+
+/* ── Active state for touch feedback ───────────────────────────────────────── */
+.tap-scale:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* ── Prevent pull-to-refresh on mobile ─────────────────────────────────────── */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* ── Focus ring for keyboard nav ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
 }

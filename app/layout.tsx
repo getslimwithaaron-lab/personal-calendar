@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
+import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'] })
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body className={`${geist.className} antialiased bg-slate-950 text-white`}>
         <SessionProvider>
           {children}
+          <ServiceWorkerRegister />
         </SessionProvider>
       </body>
     </html>

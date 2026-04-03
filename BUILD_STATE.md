@@ -6,9 +6,9 @@
 - This is the single source of truth for build progress
 
 ## Current Status
-PHASE: Phase 8 — Week view
-LAST SESSION: 2026-04-02 — Phase 7 complete (App shell + layout)
-NEXT ACTION: Begin Phase 8 — Week view (7-col grid, swipe, split-column mode)
+PHASE: Phase 23 — QA + polish (Aaron tests)
+LAST SESSION: 2026-04-03 — Phases 8-22 all complete
+NEXT ACTION: Aaron runs QA + polish pass
 
 ## Phase Completion Tracker
 
@@ -21,21 +21,21 @@ NEXT ACTION: Begin Phase 8 — Week view (7-col grid, swipe, split-column mode)
 | 5 | Event merge layer (normalize Google + Outlook) | ✅ Complete |
 | 6 | Supabase Realtime push sync | ✅ Complete |
 | 7 | App shell + layout (sidebar, topbar, nav, theme) | ✅ Complete |
-| 8 | Week view (7-col grid, swipe, split-column mode) | Not started |
-| 9 | Day view (hour timeline, now bar, auto-scroll) | Not started |
-| 10 | Month view (grid, dot indicators, tap to jump) | Not started |
-| 11 | Agenda view (scrollable list, date headers) | Not started |
-| 12 | Drag to reschedule (use Claude Code) | Not started |
-| 13 | Natural language event creation (use Claude Code) | Not started |
-| 14 | Event detail drawer (Framer Motion, edit, delete) | Not started |
-| 15 | Event templates (save, quick-create, manage) | Not started |
-| 16 | Ideal week frames (background layer, settings) | Not started |
-| 17 | Task sidebar (add, drag to timebox) (use Claude Code) | Not started |
-| 18 | Weather inline (Open-Meteo, cache, day cell display) | Not started |
-| 19 | Focus + blocked event types | Not started |
-| 20 | Settings panel (theme, hours, colors) | Not started |
-| 21 | Touch optimization pass (64px targets, scroll) | Not started |
-| 22 | Progressive Web App (manifest, service worker) | Not started |
+| 8 | Week view (7-col grid, swipe, split-column mode) | ✅ Complete |
+| 9 | Day view (hour timeline, now bar, auto-scroll) | ✅ Complete |
+| 10 | Month view (grid, dot indicators, tap to jump) | ✅ Complete |
+| 11 | Agenda view (scrollable list, date headers) | ✅ Complete |
+| 12 | Drag to reschedule (use Claude Code) | ✅ Complete |
+| 13 | Natural language event creation (use Claude Code) | ✅ Complete |
+| 14 | Event detail drawer (Framer Motion, edit, delete) | ✅ Complete |
+| 15 | Event templates (save, quick-create, manage) | ✅ Complete |
+| 16 | Ideal week frames (background layer, settings) | ✅ Complete |
+| 17 | Task sidebar (add, drag to timebox) (use Claude Code) | ✅ Complete |
+| 18 | Weather inline (Open-Meteo, cache, day cell display) | ✅ Complete |
+| 19 | Focus + blocked event types | ✅ Complete |
+| 20 | Settings panel (theme, hours, colors) | ✅ Complete |
+| 21 | Touch optimization pass (64px targets, scroll) | ✅ Complete |
+| 22 | Progressive Web App (manifest, service worker) | ✅ Complete |
 | 23 | QA + polish (end-to-end, edge cases, timezone) | Not started - Aaron tests |
 
 ## Environment Variables (.env.local)
@@ -90,3 +90,10 @@ New secret (****1tOX): Active ✅
 | 2026-04-02 | Phase 5 complete — merge utility (lib/events/merge.ts), unified hook (useCalendarEvents), unified API route (api/events) |
 | 2026-04-02 | Phase 6 complete — Realtime helpers (lib/supabase/realtime.ts), useRealtimeEvents hook, subscriptions for connections/events/tasks |
 | 2026-04-02 | Phase 7 complete — AppShell, Sidebar (nav icons, active state), Topbar (date nav, sync indicator), dashboard layout integration |
+| 2026-04-03 | Phases 8-11 — Week view (7-col TimeGrid, day headers, auto-scroll), Day view (single column), Month view (grid with event previews/dots), Agenda view (30-day list with sticky date headers) |
+| 2026-04-03 | Phases 12-14 — DraggableEvent (pointer drag reschedule), NLP parser (chrono-node QuickAdd), EventDrawer (Framer Motion slide, edit/delete) |
+| 2026-04-03 | Phases 15-17 — Event templates API + hook, Ideal week frames API + overlay component, Task sidebar + full CRUD API |
+| 2026-04-03 | Phases 18-19 — Weather API (Open-Meteo, 30min cache) + useWeather hook, Focus/blocked event type styling system |
+| 2026-04-03 | Phase 20 — Settings panel (theme, default view, working hours, weather/ideal week toggles, sign out) |
+| 2026-04-03 | Phase 21 — Touch optimization (refined CSS, scrollbar styling, safe-area padding, tap-scale, focus-visible, no-select) |
+| 2026-04-03 | Phase 22 — PWA (service worker with stale-while-revalidate, SW registration component, updated manifest with SVG icons) |
