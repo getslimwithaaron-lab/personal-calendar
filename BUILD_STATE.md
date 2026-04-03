@@ -6,9 +6,9 @@
 - This is the single source of truth for build progress
 
 ## Current Status
-PHASE: Phase 4 — Outlook OAuth + Microsoft Graph (Aaron approves before starting)
-LAST SESSION: 2026-04-02 — Phase 3 complete, committed, pushed
-NEXT ACTION: Begin Phase 4 OR skip to Phase 5 (event merge layer) if Outlook not needed yet
+PHASE: Phase 5 — Event merge layer
+LAST SESSION: 2026-04-02 — Phase 4 code complete, TypeScript clean, committed
+NEXT ACTION: Begin Phase 5 — normalize Google + Outlook events into unified CalendarEvent array
 
 ## Phase Completion Tracker
 
@@ -17,7 +17,7 @@ NEXT ACTION: Begin Phase 4 OR skip to Phase 5 (event merge layer) if Outlook not
 | 1 | Scaffold (Next.js, Supabase, GitHub, Vercel) | ✅ Complete |
 | 2 | Auth + user (Supabase Auth, NextAuth, protected routes) | ✅ Complete |
 | 3 | Google Calendar OAuth + read/write | ✅ Complete |
-| 4 | Outlook OAuth + Microsoft Graph read/write | Not started - Aaron approves |
+| 4 | Outlook OAuth + Microsoft Graph read/write | ✅ Complete — Azure portal needed |
 | 5 | Event merge layer (normalize Google + Outlook) | Not started |
 | 6 | Supabase Realtime push sync | Not started |
 | 7 | App shell + layout (sidebar, topbar, nav, theme) | Not started |
@@ -41,37 +41,48 @@ NEXT ACTION: Begin Phase 4 OR skip to Phase 5 (event merge layer) if Outlook not
 ## Environment Variables (.env.local)
 NEXTAUTH_SECRET=✅ set
 NEXTAUTH_URL=✅ http://localhost:3000
-GOOGLE_CLIENT_ID=✅ 650675069252-7mk633cnopcjuclf68222l2hcb4dt6rp.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=✅ set (GOCSPX-...)
-AZURE_AD_CLIENT_ID=⚠️ empty — needed for Phase 4
-AZURE_AD_CLIENT_SECRET=⚠️ empty — needed for Phase 4
+GOOGLE_CLIENT_ID=✅ set
+GOOGLE_CLIENT_SECRET=✅ set
+AZURE_AD_CLIENT_ID=⚠️ empty — Aaron must add after Azure portal setup
+AZURE_AD_CLIENT_SECRET=⚠️ empty — Aaron must add after Azure portal setup
 AZURE_AD_TENANT_ID=✅ common
 NEXT_PUBLIC_SUPABASE_URL=✅ set
 NEXT_PUBLIC_SUPABASE_ANON_KEY=✅ set
 SUPABASE_SERVICE_ROLE_KEY=✅ set
+
+## Azure Portal Setup (Aaron must complete before Outlook works)
+1. Go to https://portal.azure.com
+2. Azure Active Directory > App registrations > New registration
+3. Name: "Personal Calendar App"
+4. Supported account types: Accounts in any organizational directory AND personal Microsoft accounts
+5. Redirect URI: Web > http://localhost:3000/api/auth/callback/azure-ad
+6. After creation: API permissions > Add > Microsoft Graph > Delegated:
+   - Calendars.ReadWrite
+   - offline_access
+   - User.Read
+   - Grant admin consent
+7. Certificates & secrets > New client secret > copy value immediately
+8. Copy Application (client) ID and secret into .env.local as AZURE_AD_CLIENT_ID and AZURE_AD_CLIENT_SECRET
+
+## Phase 4 — What Was Built
+- lib/outlook/token.ts — Microsoft token refresh, auto-refresh if expiring within 5 min, rotated token support
+- lib/outlook/calendar.ts — Map/list/create/update/delete via Microsoft Graph, Windows→IANA timezone map
+- app/api/calendars/outlook/connect/route.ts — POST: saves Outlook connection to Supabase
+- app/api/calendars/outlook/events/route.ts — GET/POST/PATCH/DELETE events via Graph API
+- app/api/calendars/outlook/disconnect/route.ts — DELETE: removes connection from Supabase
+- hooks/useOutlookCalendar.ts — Client hook to fetch events across all active Outlook connections
 
 ## Google Cloud Console (Phase 3)
 Project: Personal Calendar App (personal-calendar-app-492105)
 Client ID: 650675069252-7mk633cnopcjuclf68222l2hcb4dt6rp.apps.googleusercontent.com
 Redirect URI: http://localhost:3000/api/auth/callback/google ✅
 Google Calendar API: Enabled ✅
-OAuth consent: Configured ✅
-Old secret (****qm8x): DISABLE this in Google console — new one is active
+Old secret (****qm8x): Disabled ✅
 New secret (****1tOX): Active ✅
 
-## Phase 3 — What Was Built
-- lib/google/token.ts — Token refresh logic, auto-refresh if expiring within 5 min
-- lib/google/calendar.ts — List/create/update/delete Google Calendar events, event mapper
-- app/api/calendars/google/connect/route.ts — POST: saves connection to Supabase
-- app/api/calendars/google/events/route.ts — GET/POST/PATCH/DELETE events via Google API
-- app/api/calendars/google/disconnect/route.ts — DELETE: removes connection from Supabase
-- hooks/useGoogleCalendar.ts — Client hook to fetch events across multiple connections
-
 ## Known Issues / Blockers
-- Old Google OAuth secret (****qm8x) should be disabled in Google Cloud Console
-  Go to: https://console.cloud.google.com/auth/clients/650675069252-7mk633cnopcjuclf68222l2hcb4dt6rp.apps.googleusercontent.com?project=personal-calendar-app-492105
-  Click Disable next to the old secret
-- Phase 4 (Outlook) requires Azure app registration — Aaron approves before starting
+- Azure portal registration not yet done — Outlook auth won't work until AZURE_AD_CLIENT_ID and AZURE_AD_CLIENT_SECRET are in .env.local
+- See Azure Portal Setup section above for exact steps
 
 ## Session Log
 | Date | What was done |
@@ -81,3 +92,4 @@ New secret (****1tOX): Active ✅
 | 2026-04-02 | Supabase schema applied (all 8 tables confirmed in dashboard) |
 | 2026-04-02 | Google Cloud project created, Calendar API enabled, OAuth configured |
 | 2026-04-02 | Phase 3 complete — Google credentials, token refresh, event CRUD, hook |
+| 2026-04-02 | Phase 4 complete — Outlook token refresh, Graph CRUD, 3 API routes, hook |
