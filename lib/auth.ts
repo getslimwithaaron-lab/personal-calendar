@@ -43,12 +43,6 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // ── Custom pages ────────────────────────────────────────────────────────────
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
-
   // Don't auto-protect routes — we handle this in middleware.ts
   trustHost: true,
 
