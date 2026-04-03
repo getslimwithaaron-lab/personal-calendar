@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import { SessionProvider } from 'next-auth/react'
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'] })
@@ -38,6 +39,7 @@ export default function RootLayout({
         <SessionProvider>
           {children}
           <ServiceWorkerRegister />
+          <PWAInstallPrompt />
         </SessionProvider>
       </body>
     </html>
