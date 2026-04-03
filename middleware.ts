@@ -9,6 +9,9 @@ export async function middleware(req: NextRequest) {
   const publicPaths = ['/', '/login', '/signup', '/onboarding', '/invite', '/admin']
   const publicPrefixes = ['/api/signup', '/api/invite', '/api/auth', '/api/billing/webhook', '/api/admin']
 
+  // Root path check (pathname could be "/" or "")
+  if (pathname === '/' || pathname === '') return NextResponse.next()
+
   const isPublic = publicPaths.includes(pathname)
     || publicPrefixes.some(p => pathname.startsWith(p))
     || pathname.startsWith('/invite/')
