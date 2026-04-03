@@ -55,6 +55,41 @@ NEXT ACTION: Aaron runs QA on the touch screen PC, reports bugs, then Claude fix
 | 21 | Touch optimization pass (64px targets, scroll) | ✅ Complete |
 | 22 | Progressive Web App (manifest, service worker) | ✅ Complete |
 | 23 | QA + polish (end-to-end, edge cases, timezone) | Not started — Aaron tests |
+| 24 | Turn app into a shareable product for other families | Planned — not started |
+
+---
+
+## Phase 24 Plan — Turn App Into a Shareable Product
+
+**Status:** Planned — not started
+
+### Step 1 — Public Landing Page
+Public marketing page at the root URL (`/`). Shows what the app does, screenshots, pricing, and a Sign Up button. Clean, professional design. Current authenticated users still redirect to `/week`.
+
+### Step 2 — Self-Service Sign Up
+Any family can go to the URL, enter their name and email, create a password, and they are in. No technical setup required on their end. Standard email + password auth alongside existing Google/Microsoft OAuth.
+
+### Step 3 — Onboarding Flow
+After sign up, walks the new user through: (1) connecting their Google or Outlook calendar, (2) setting up their first widget, (3) inviting a family member. Simple step-by-step wizard with big touch-friendly buttons.
+
+### Step 4 — Billing with Stripe
+- $4.99/month or $39/year
+- 14-day free trial, no credit card required to start
+- Cancel any time
+- Stripe handles all payment processing
+- App checks subscription status and gates access after trial expires
+
+### Step 5 — Family Member Invites
+Account owner can invite one other person by email. Invitee gets a link, clicks it, creates a password, and shares the same calendar and widgets. No technical knowledge needed.
+
+### Step 6 — Admin Dashboard
+Simple page where Aaron can see: number of families signed up, how many are on trial vs paid, and monthly revenue. Nothing fancy — just the key metrics.
+
+### Step 7 — Deploy to Vercel with a Real Domain
+App lives at a clean URL (e.g. familydashboard.app or similar). SSL included automatically via Vercel. Production environment with proper env vars.
+
+### Step 8 — PWA Install Prompt
+When someone opens the app on their phone, prompt them to add it to their home screen so it feels like a real app install. Uses the `beforeinstallprompt` event.
 
 ---
 

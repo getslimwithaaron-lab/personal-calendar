@@ -89,6 +89,20 @@ export default function SettingsPage() {
           Sign Out
         </button>
       </Section>
+
+      {/* Discreet exit fullscreen button */}
+      <div className="flex justify-end pt-4">
+        <button
+          onClick={() => {
+            if (document.fullscreenElement) {
+              document.exitFullscreen()
+            }
+          }}
+          className="text-[11px] text-slate-600 hover:text-slate-400 transition-colors px-2 py-1"
+        >
+          Exit Full Screen
+        </button>
+      </div>
     </div>
   )
 }
