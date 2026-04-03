@@ -49,6 +49,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: '/login',
   },
 
+  // Don't auto-protect routes — we handle this in middleware.ts
+  trustHost: true,
+
   // ── Providers ───────────────────────────────────────────────────────────────
   providers: [
     Google({
