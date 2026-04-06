@@ -50,29 +50,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
     }
 
-    const priceAmount = plan === 'monthly' ? 499 : 3900
-    const interval = plan === 'monthly' ? 'month' : 'year'
+    const priceId = plan === 'monthly'
+      ? process.env.STRIPE_PRICE_MONTHLY!
+      : process.env.STRIPE_PRICE_YEARLY!
 
     const checkoutSession = await getStripe().checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       customer_email: session.user.email,
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `FamilyCal ${plan === 'monthly' ? 'Monthly' : 'Yearly'} Plan`,
-              description: plan === 'monthly'
-                ? '$4.99/month - Family calendar for everyone'
-                : '$39/year - Save over 30%',
-            },
-            unit_amount: priceAmount,
-            recurring: { interval },
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: {
+        trial_period_days: 14,
+      },
       success_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/week?billing=success`,
       cancel_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/week?billing=canceled`,
       metadata: {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { createClient } from '@supabase/supabase-js'
+import { addInviteContact } from '@/lib/emailoctopus'
 
 function getSupabase() {
   return createClient(
@@ -66,9 +67,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to create invite' }, { status: 500 })
   }
 
-  // In production, send email here. For now return the link.
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
   const inviteLink = `${baseUrl}/invite/${token}`
+
+  // Send invite email via EmailOctopus (non-blocking)
+  const inviterName = session.user.name || session.user.email || 'A family member'
+  addInviteContact(email, inviteLink, inviterName).catch((err) =>
+    console.error('EmailOctopus invite error:', err)
+  )
 
   return NextResponse.json({ success: true, inviteLink })
 }

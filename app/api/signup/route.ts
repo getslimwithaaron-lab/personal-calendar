@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
+import { addSignupContact } from '@/lib/emailoctopus'
 
 function getSupabase() {
   return createClient(
@@ -69,6 +70,11 @@ export async function POST(req: Request) {
       show_weather: true,
       show_ideal_week: false,
     })
+
+    // Add to EmailOctopus list (non-blocking — don't fail signup if email service is down)
+    addSignupContact(email, name).catch((err) =>
+      console.error('EmailOctopus signup error:', err)
+    )
 
     return NextResponse.json({ success: true, userId: user.id })
   } catch (err) {
