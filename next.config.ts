@@ -1,15 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Root / always goes to /login (auth handled by dashboard layout + login layout)
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/login',
-        permanent: false,
-      },
-    ]
+  turbopack: {
+    root: __dirname,
   },
   // Allow cross-origin requests from the touch display on the same network
   async headers() {
