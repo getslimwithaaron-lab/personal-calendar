@@ -1,40 +1,51 @@
-# Build State — Personal Calendar App
+# Build State — FamilyCal (Personal Calendar App)
 
 ## How To Use This File
 - READ THIS FIRST at the start of every session
 - UPDATE THIS at the end of every session
 - This is the single source of truth for build progress
 - .env.local is NOT in git — credentials are listed below for handoff
+- A Google Doc mirror lives at: https://docs.google.com/document/d/1eGLkfWTaU7MMvu6-fxu0sAUGz2lSXsqE2nGBbOOWd4c/edit
+- **Keep BUILD_STATE.md and the Google Doc in sync — update both every time**
 
 ## Current Status
-PHASE: Phase 24 — Shareable product (code complete)
-LAST SESSION: 2026-04-03
-NEXT ACTION: Run Supabase migration, set up Stripe account, test signup flow end-to-end
+PHASE: Phase 24 — Shareable product (code complete, migration applied)
+LAST SESSION: 2026-04-04
+NEXT ACTION: Set up Stripe account + API keys, fix landing page / redirect, buy custom domain
 
 ## What Is Working
 - All 24 build phases are code-complete and TypeScript-clean
 - `npm run build` succeeds with zero errors
-- Code is merged to `main` and pushed to GitHub
+- Code is merged to `main` and pushed to GitHub (repo is PUBLIC)
 - Deployed to Vercel at https://personal-calendar-gules.vercel.app
-- Google OAuth test user added (getslimwithaaron@gmail.com)
-- Google OAuth redirect URI added for Vercel URL
-- Azure OAuth redirect URI added for Vercel URL
-- Azure app open to all Microsoft accounts (no test user list needed)
-- App is designed for a 42" portrait touch screen (not landscape)
-- Public landing page at / with pricing and signup
-- Self-service signup with email/password + 14-day free trial
-- Family member invite system (owner invites 1 member by email)
-- Stripe billing integration wired up ($4.99/mo or $39/yr)
-- 3-step onboarding flow after signup
-- PWA install prompt on mobile
-- Admin dashboard at /admin (Aaron only)
+- Supabase Phase 24 migration applied (users columns + invites table)
+- Google OAuth configured (test mode — getslimwithaaron@gmail.com)
+- Google OAuth redirect URI added for both localhost AND Vercel URL
+- Azure OAuth configured (open to all Microsoft accounts)
+- Azure OAuth redirect URI added for both localhost AND Vercel URL
+- Self-service signup page at /signup with email/password + Google/Microsoft OAuth
+- Credentials auth provider (bcryptjs password hashing)
+- Family member invite system (owner invites 1 member by email, accept page at /invite/[token])
+- Stripe billing integration wired ($4.99/mo or $39/yr, webhook handler)
+- 3-step onboarding wizard at /onboarding
+- PWA install prompt banner on all pages
+- Admin dashboard at /admin (restricted to getslimwithaaron@gmail.com)
+- 14 floating widgets: Grocery, Meal Planner, Chore Chart, Contacts, Countdown, Expense, Birthday, Recipe Box, Notes, To-Do, Weather, Mini Calendar, Alert History, and a base FloatingWidget component
+- Widget manager + widget panel for drag/position/resize
+- Family alert system (send alerts, overlay display, alert history)
+- QuickAdd (NLP event creation) wired into AppShell
+- TaskSidebar wired into AppShell
+- Exit fullscreen button on settings page + Alt+F4 keyboard shortcut
+- Launch scripts for kiosk mode (launch-calendar.bat, .ps1, .vbs)
+- App designed for 42" portrait touch screen
 
 ## What Has NOT Been Tested Yet
-- Nobody has signed in with Google or Microsoft yet — OAuth flows are untested end-to-end
-- No real calendar events have been fetched — API integration is untested against live data
-- The second PC (touch screen) has not been set up yet
-- PWA install has not been tested
-- Supabase Realtime subscriptions have not been tested with live data
+- Nobody has signed in with Google or Microsoft on Vercel yet — OAuth flows untested live
+- No real calendar events have been fetched — API integration untested against live data
+- Signup flow untested end-to-end (needs Supabase migration — DONE, but flow not tested)
+- Stripe payments untested (no Stripe account/keys configured yet)
+- PWA install not tested on real mobile device
+- Supabase Realtime subscriptions untested with live data
 
 ---
 
@@ -42,64 +53,54 @@ NEXT ACTION: Run Supabase migration, set up Stripe account, test signup flow end
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Scaffold (Next.js, Supabase, GitHub, Vercel) | ✅ Complete |
-| 2 | Auth + user (Supabase Auth, NextAuth, protected routes) | ✅ Complete |
-| 3 | Google Calendar OAuth + read/write | ✅ Complete |
-| 4 | Outlook OAuth + Microsoft Graph read/write | ✅ Complete |
-| 5 | Event merge layer (normalize Google + Outlook) | ✅ Complete |
-| 6 | Supabase Realtime push sync | ✅ Complete |
-| 7 | App shell + layout (sidebar, topbar, nav, theme) | ✅ Complete |
-| 8 | Week view (7-col grid, swipe, split-column mode) | ✅ Complete |
-| 9 | Day view (hour timeline, now bar, auto-scroll) | ✅ Complete |
-| 10 | Month view (grid, dot indicators, tap to jump) | ✅ Complete |
-| 11 | Agenda view (scrollable list, date headers) | ✅ Complete |
-| 12 | Drag to reschedule (use Claude Code) | ✅ Complete |
-| 13 | Natural language event creation (use Claude Code) | ✅ Complete |
-| 14 | Event detail drawer (Framer Motion, edit, delete) | ✅ Complete |
-| 15 | Event templates (save, quick-create, manage) | ✅ Complete |
-| 16 | Ideal week frames (background layer, settings) | ✅ Complete |
-| 17 | Task sidebar (add, drag to timebox) (use Claude Code) | ✅ Complete |
-| 18 | Weather inline (Open-Meteo, cache, day cell display) | ✅ Complete |
-| 19 | Focus + blocked event types | ✅ Complete |
-| 20 | Settings panel (theme, hours, colors) | ✅ Complete |
-| 21 | Touch optimization pass (64px targets, scroll) | ✅ Complete |
-| 22 | Progressive Web App (manifest, service worker) | ✅ Complete |
-| 23 | QA + polish (end-to-end, edge cases, timezone) | Not started — Aaron tests |
-| 24 | Turn app into a shareable product for other families | ✅ Complete (code) |
+| 1 | Scaffold (Next.js, Supabase, GitHub, Vercel) | Done |
+| 2 | Auth + user (Supabase Auth, NextAuth, protected routes) | Done |
+| 3 | Google Calendar OAuth + read/write | Done |
+| 4 | Outlook OAuth + Microsoft Graph read/write | Done |
+| 5 | Event merge layer (normalize Google + Outlook) | Done |
+| 6 | Supabase Realtime push sync | Done |
+| 7 | App shell + layout (sidebar, topbar, nav, theme) | Done |
+| 8 | Week view (7-col grid, swipe, split-column mode) | Done |
+| 9 | Day view (hour timeline, now bar, auto-scroll) | Done |
+| 10 | Month view (grid, dot indicators, tap to jump) | Done |
+| 11 | Agenda view (scrollable list, date headers) | Done |
+| 12 | Drag to reschedule | Done |
+| 13 | Natural language event creation (chrono-node) | Done |
+| 14 | Event detail drawer (Framer Motion, edit, delete) | Done |
+| 15 | Event templates (save, quick-create, manage) | Done |
+| 16 | Ideal week frames (background layer, settings) | Done |
+| 17 | Task sidebar (add, drag to timebox) | Done |
+| 18 | Weather inline (Open-Meteo, cache, day cell display) | Done |
+| 19 | Focus + blocked event types | Done |
+| 20 | Settings panel (theme, hours, colors, exit fullscreen) | Done |
+| 21 | Touch optimization pass (64px targets, scroll) | Done |
+| 22 | Progressive Web App (manifest, service worker) | Done |
+| 23 | QA + polish | Not started — Aaron tests |
+| 24 | Shareable product (landing, signup, billing, invites, onboarding, admin, PWA prompt) | Done (code) — needs Stripe keys + domain |
 
----
+### Widgets Built (14 total)
+| Widget | API Route | Component |
+|--------|-----------|-----------|
+| Grocery List | /api/grocery | GroceryWidget.tsx |
+| Meal Planner | /api/meals | MealPlannerWidget.tsx |
+| Chore Chart | /api/chores | ChoreChartWidget.tsx |
+| Contacts | /api/contacts | ContactsWidget.tsx |
+| Countdown | /api/countdowns | CountdownWidget.tsx |
+| Expense Tracker | /api/expenses | ExpenseWidget.tsx |
+| Birthday Tracker | /api/birthdays | BirthdayWidget.tsx |
+| Recipe Box | /api/recipes | RecipeBoxWidget.tsx |
+| Notes | /api/notes | NotesWidget.tsx |
+| To-Do | /api/tasks | ToDoWidget.tsx |
+| Weather | /api/weather | WeatherWidget.tsx |
+| Mini Calendar | (client-only) | MiniCalendarWidget.tsx |
+| Alert History | /api/alerts | AlertHistoryWidget.tsx |
+| Floating Base | (wrapper) | FloatingWidget.tsx |
 
-## Phase 24 Plan — Turn App Into a Shareable Product
-
-**Status:** Code complete — needs Supabase migration + Stripe setup
-
-### Step 1 — Public Landing Page
-Public marketing page at the root URL (`/`). Shows what the app does, screenshots, pricing, and a Sign Up button. Clean, professional design. Current authenticated users still redirect to `/week`.
-
-### Step 2 — Self-Service Sign Up
-Any family can go to the URL, enter their name and email, create a password, and they are in. No technical setup required on their end. Standard email + password auth alongside existing Google/Microsoft OAuth.
-
-### Step 3 — Onboarding Flow
-After sign up, walks the new user through: (1) connecting their Google or Outlook calendar, (2) setting up their first widget, (3) inviting a family member. Simple step-by-step wizard with big touch-friendly buttons.
-
-### Step 4 — Billing with Stripe
-- $4.99/month or $39/year
-- 14-day free trial, no credit card required to start
-- Cancel any time
-- Stripe handles all payment processing
-- App checks subscription status and gates access after trial expires
-
-### Step 5 — Family Member Invites
-Account owner can invite one other person by email. Invitee gets a link, clicks it, creates a password, and shares the same calendar and widgets. No technical knowledge needed.
-
-### Step 6 — Admin Dashboard
-Simple page where Aaron can see: number of families signed up, how many are on trial vs paid, and monthly revenue. Nothing fancy — just the key metrics.
-
-### Step 7 — Deploy to Vercel with a Real Domain
-App lives at a clean URL (e.g. familydashboard.app or similar). SSL included automatically via Vercel. Production environment with proper env vars.
-
-### Step 8 — PWA Install Prompt
-When someone opens the app on their phone, prompt them to add it to their home screen so it feels like a real app install. Uses the `beforeinstallprompt` event.
+### Family Alert System
+- Send alerts from /alert page
+- AlertOverlay component shows alerts on top of everything
+- Alert API at /api/alerts
+- Supabase table: family_alerts (with RLS)
 
 ---
 
@@ -118,7 +119,14 @@ NEXT_PUBLIC_SUPABASE_URL=https://mivtjdbjztnvtjixhwmh.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMDEwMDgsImV4cCI6MjA5MDY3NzAwOH0.TW3fHgAp_Tuk3Q5GOrMEhIGBe7G29u0DNqNf1liJSM8
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTEwMTAwOCwiZXhwIjoyMDkwNjc3MDA4fQ.XEtu3V0njgROSG9VkQy_0gQQakEnm6GWusxPscwszyg
 SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
+# STRIPE_SECRET_KEY=   (not yet configured — need Stripe account)
+# STRIPE_WEBHOOK_SECRET= (not yet configured)
 ```
+
+### Vercel Environment Variables (Production)
+All of the above are set in Vercel EXCEPT:
+- NEXTAUTH_URL is set to https://personal-calendar-gules.vercel.app
+- STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are NOT yet added
 
 ### Google Cloud Console
 - Console URL: https://console.cloud.google.com/apis/credentials?project=personal-calendar-app-492105
@@ -126,11 +134,10 @@ SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
 - Project ID: personal-calendar-app-492105
 - OAuth Client ID: 650675069252-7mk633cnopcjuclf68222l2hcb4dt6rp.apps.googleusercontent.com
 - OAuth Client Secret: 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
-- Redirect URI: http://localhost:3000/api/auth/callback/google
+- Redirect URIs: http://localhost:3000/api/auth/callback/google AND https://personal-calendar-gules.vercel.app/api/auth/callback/google
 - Google Calendar API: Enabled
 - Publishing status: Testing (only test users can sign in)
 - Test users: getslimwithaaron@gmail.com
-- Logged in as: getslimwithaaron@gmail.com
 - To add more test users: Console > Google Auth Platform > Audience > + Add users
 
 ### Azure Portal (Microsoft Entra ID)
@@ -140,34 +147,38 @@ SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
 - Directory (tenant) ID: 9e71d637-c1ec-4456-b22a-ac1bdb328c77
 - Client secret value: kuS8Q~EBuXd.ZwGvfZbHncB4zMgbBOVOCXPUhdhb
 - Client secret expiry: 4/1/2028
-- Supported account types: Any Entra ID Tenant + Personal Microsoft accounts (open to all — no test user restriction)
-- Redirect URI: http://localhost:3000/api/auth/callback/azure-ad
-- API permissions (all granted admin consent): Calendars.ReadWrite, offline_access, User.Read
-- Logged in as: getslimwithaaron@gmail.com
+- Supported account types: Any Entra ID Tenant + Personal Microsoft accounts
+- Redirect URIs: http://localhost:3000/api/auth/callback/azure-ad AND https://personal-calendar-gules.vercel.app/api/auth/callback/azure-ad
+- API permissions: Calendars.ReadWrite, offline_access, User.Read
 
 ### Supabase
 - Dashboard URL: https://supabase.com/dashboard/project/mivtjdbjztnvtjixhwmh
 - Project ref: mivtjdbjztnvtjixhwmh
-- Region: (check dashboard)
 - DB password: CalApp2026!xK9#mPqR
-- Tables (8): users, calendar_connections, calendar_sets, local_events, event_templates, tasks, ideal_week_frames, app_settings
-- RLS: enabled on all tables, bypassed server-side via service role key
-- Realtime: enabled on calendar_connections, local_events, tasks (REPLICA IDENTITY FULL)
+- Tables (10): users, calendar_connections, calendar_sets, local_events, event_templates, tasks, ideal_week_frames, app_settings, family_alerts, invites
+- Phase 24 migration applied: password_hash, role, family_id, subscription_status, trial_ends_at, stripe_customer_id, stripe_subscription_id columns on users; invites table created
+- RLS: enabled on all tables
 
 ### GitHub
-- Repo: https://github.com/getslimwithaaron-lab/personal-calendar
+- Repo: https://github.com/getslimwithaaron-lab/personal-calendar (PUBLIC)
 - Branch: main (all code merged and pushed)
-- Also on branch: claude/elated-franklin (identical to main)
-- Latest commit: 75c8d9c "Fix layout for 42" portrait touch display"
+
+### Vercel
+- Project URL: https://personal-calendar-gules.vercel.app
+- Dashboard: https://vercel.com/getslimwithaaron-1303s-projects/personal-calendar
+- Plan: Hobby (free)
+- Connected to GitHub repo (auto-deploys on push to main)
 
 ---
 
 ## Tech Stack
 - **Framework**: Next.js 16.2.2, React 19.2.4
-- **Auth**: NextAuth 5.0.0-beta.30 (JWT strategy, no DB adapter)
+- **Auth**: NextAuth 5.0.0-beta.30 (JWT strategy, Google + Microsoft + Credentials providers)
 - **Styling**: Tailwind CSS 4 (via @tailwindcss/postcss)
 - **Database**: Supabase (PostgreSQL + Realtime)
 - **Calendar APIs**: Google Calendar API v3, Microsoft Graph v1.0
+- **Payments**: Stripe (billing API + webhook handler built, not yet configured)
+- **Password Hashing**: bcryptjs
 - **Date/Time**: date-fns 4.1.0, date-fns-tz 3.2.0
 - **NLP**: chrono-node 2.9.0
 - **Animation**: framer-motion 12.38.0
@@ -178,13 +189,18 @@ SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
 ```
 C:\Users\unici\Desktop\personal-calendar\
 ├── app/
-│   ├── layout.tsx                    # Root layout (Geist font, SessionProvider, SW register)
-│   ├── page.tsx                      # Redirects / → /week
+│   ├── layout.tsx                    # Root layout (Geist font, SessionProvider, PWA prompt)
+│   ├── page.tsx                      # Landing page (client, redirects to /week if logged in)
 │   ├── globals.css                   # Tailwind + touch optimization + portrait display
 │   ├── login/page.tsx                # Google + Microsoft sign-in buttons
+│   ├── signup/page.tsx               # Self-service signup (email/password + OAuth)
+│   ├── onboarding/page.tsx           # 3-step wizard (calendar, invite, done)
+│   ├── admin/page.tsx                # Admin dashboard (Aaron only)
+│   ├── alert/page.tsx                # Send family alerts
+│   ├── invite/[token]/page.tsx       # Accept family invite
 │   ├── settings/
 │   │   ├── layout.tsx                # Auth gate + AppShell wrapper
-│   │   └── page.tsx                  # Theme, working hours, toggles, sign out
+│   │   └── page.tsx                  # Theme, hours, toggles, sign out, exit fullscreen
 │   ├── (dashboard)/
 │   │   ├── layout.tsx                # Auth gate + AppShell wrapper
 │   │   ├── week/page.tsx             # 7-col time grid
@@ -193,26 +209,48 @@ C:\Users\unici\Desktop\personal-calendar\
 │   │   └── agenda/page.tsx           # 30-day scrollable event list
 │   └── api/
 │       ├── auth/[...nextauth]/       # NextAuth route handler
-│       ├── events/route.ts           # Unified merged events endpoint
-│       ├── calendars/google/         # connect, disconnect, events routes
-│       ├── calendars/outlook/        # connect, disconnect, events routes
-│       ├── tasks/route.ts            # CRUD
-│       ├── templates/route.ts        # CRUD
-│       ├── ideal-week/route.ts       # CRUD
-│       ├── settings/route.ts         # GET + PATCH
-│       └── weather/route.ts          # Open-Meteo proxy with 30min cache
+│       ├── signup/route.ts           # Self-service signup
+│       ├── invite/route.ts           # Send invite
+│       ├── invite/accept/route.ts    # Accept invite
+│       ├── billing/route.ts          # Stripe checkout + subscription status
+│       ├── billing/webhook/route.ts  # Stripe webhook handler
+│       ├── admin/route.ts            # Admin stats (Aaron only)
+│       ├── events/route.ts           # Unified merged events
+│       ├── calendars/google/         # connect, disconnect, events
+│       ├── calendars/outlook/        # connect, disconnect, events
+│       ├── alerts/route.ts           # Family alerts CRUD
+│       ├── grocery/route.ts          # Grocery list CRUD
+│       ├── meals/route.ts            # Meal planner CRUD
+│       ├── chores/route.ts           # Chore chart CRUD
+│       ├── contacts/route.ts         # Contacts CRUD
+│       ├── countdowns/route.ts       # Countdown CRUD
+│       ├── expenses/route.ts         # Expense tracker CRUD
+│       ├── birthdays/route.ts        # Birthday tracker CRUD
+│       ├── recipes/route.ts          # Recipe box CRUD
+│       ├── notes/route.ts            # Notes CRUD
+│       ├── tasks/route.ts            # Tasks CRUD
+│       ├── templates/route.ts        # Event templates CRUD
+│       ├── ideal-week/route.ts       # Ideal week CRUD
+│       ├── settings/route.ts         # App settings GET + PATCH
+│       ├── weather/route.ts          # Open-Meteo proxy
+│       └── widget-layouts/route.ts   # Widget positions/sizes
 ├── components/
-│   ├── AppShell.tsx                  # Sidebar + Topbar + main + EventDrawer
+│   ├── AppShell.tsx                  # Main layout (sidebar, topbar, widgets, alerts)
 │   ├── CalendarProvider.tsx          # React context for date state + selected event
-│   ├── Sidebar.tsx                   # Nav links (week/day/month/agenda/settings)
-│   ├── Topbar.tsx                    # Date display + prev/next/today + sync indicator
-│   ├── TimeGrid.tsx                  # Shared hour grid for week + day views
-│   ├── EventDrawer.tsx               # Framer Motion slide panel (edit/delete)
+│   ├── Sidebar.tsx                   # Nav links
+│   ├── Topbar.tsx                    # Date display + prev/next/today
+│   ├── TimeGrid.tsx                  # Shared hour grid for week + day
+│   ├── EventDrawer.tsx               # Framer Motion slide panel
 │   ├── DraggableEvent.tsx            # Pointer drag to reschedule
 │   ├── QuickAdd.tsx                  # NLP event creation input
 │   ├── TaskSidebar.tsx               # Task list with add/toggle/delete
 │   ├── IdealWeekOverlay.tsx          # Background time block layer
-│   └── ServiceWorkerRegister.tsx     # SW registration on mount
+│   ├── WidgetManager.tsx             # Widget rendering + layout manager
+│   ├── WidgetPanel.tsx               # Widget selector panel
+│   ├── AlertOverlay.tsx              # Family alert display overlay
+│   ├── PWAInstallPrompt.tsx          # "Add to home screen" banner
+│   ├── ServiceWorkerRegister.tsx     # SW registration
+│   └── widgets/                     # 14 widget components (see table above)
 ├── hooks/
 │   ├── useCalendarEvents.ts          # Unified Google + Outlook fetch + merge
 │   ├── useGoogleCalendar.ts          # Per-connection Google fetch
@@ -222,28 +260,39 @@ C:\Users\unici\Desktop\personal-calendar\
 │   ├── useEventTemplates.ts          # Template CRUD
 │   ├── useIdealWeek.ts               # Ideal week frame CRUD
 │   ├── useSettings.ts                # App settings
-│   └── useWeather.ts                 # 7-day forecast
+│   ├── useWeather.ts                 # 7-day forecast
+│   ├── useAlerts.ts                  # Family alerts
+│   ├── useNotes.ts                   # Notes CRUD
+│   └── useWidgetData.ts              # Widget data fetcher
 ├── lib/
-│   ├── auth.ts                       # NextAuth config (Google + Microsoft providers)
-│   ├── google/calendar.ts            # Map/list/create/update/delete Google events
+│   ├── auth.ts                       # NextAuth config (Google + Microsoft + Credentials)
+│   ├── authCredentials.ts            # Credentials provider (bcrypt password check)
+│   ├── google/calendar.ts            # Google Calendar CRUD
 │   ├── google/token.ts               # Google token refresh
-│   ├── outlook/calendar.ts           # Map/list/create/update/delete Outlook events
+│   ├── outlook/calendar.ts           # Outlook Calendar CRUD
 │   ├── outlook/token.ts              # Microsoft token refresh
 │   ├── events/merge.ts               # Sort, deduplicate, filter, groupByDate
-│   ├── events/nlp.ts                 # chrono-node natural language parser
+│   ├── events/nlp.ts                 # chrono-node NLP parser
 │   ├── events/reschedule.ts          # Client-side reschedule helper
-│   ├── events/eventTypes.ts          # Focus/blocked styling definitions
+│   ├── events/eventTypes.ts          # Focus/blocked styling
 │   ├── supabase/client.ts            # Browser Supabase client
 │   ├── supabase/server.ts            # Server Supabase client
+│   ├── supabase/admin.ts             # Admin Supabase client (service role)
 │   └── supabase/realtime.ts          # Channel subscription helpers
-├── types/index.ts                    # CalendarEvent, Task, AppSettings, etc.
-├── middleware.ts                     # Route protection (redirect to /login)
+├── middleware.ts                     # Passthrough (auth at layout level)
+├── launch-calendar.bat              # Kiosk mode launcher (Windows)
+├── launch-calendar.ps1              # Kiosk mode launcher (PowerShell)
+├── launch-calendar.vbs              # Kiosk mode launcher (VBScript)
 ├── public/
-│   ├── manifest.json                 # PWA manifest (portrait orientation)
-│   ├── sw.js                         # Service worker (stale-while-revalidate)
+│   ├── manifest.json                 # PWA manifest (portrait)
+│   ├── sw.js                         # Service worker
 │   └── icons/icon-192.svg            # App icon
 └── supabase/migrations/
-    └── 20260401000000_initial_schema.sql  # All 8 tables + RLS + indexes
+    ├── 20260401000000_initial_schema.sql       # 8 original tables
+    ├── 20260403000000_notes_and_assignee.sql   # Notes + assignee columns
+    ├── 20260403100000_widgets_full.sql         # Widget tables
+    ├── 20260403200000_family_alerts.sql        # Family alerts table
+    └── 20260403300000_phase24_schema.sql       # Users billing cols + invites table
 ```
 
 ## Display Target
@@ -263,7 +312,6 @@ npm run start
 ```
 
 ## How To Deploy to Second PC
-Full step-by-step instructions were written for a non-technical user. Key steps:
 1. Install Chrome, Node.js, Git on the second PC
 2. `git clone https://github.com/getslimwithaaron-lab/personal-calendar.git C:\calendar`
 3. Copy .env.local (full contents above) into C:\calendar\.env.local
@@ -271,48 +319,33 @@ Full step-by-step instructions were written for a non-technical user. Key steps:
 5. Open localhost:3000 in Chrome, install as PWA, press F11 for fullscreen
 
 ## Known Issues / Blockers
-- Google OAuth is in "Testing" mode — only test users listed in Google Cloud Console can sign in. To let anyone sign in, click "Publish app" on the Audience page (Google may require app verification).
-- Azure client secret expires 4/1/2028 — will need to be rotated before then.
-- The QuickAdd and TaskSidebar components are built but not wired into the AppShell yet — they need to be added to the UI in a future session.
-- DraggableEvent component exists but TimeGrid still uses the simpler EventBlock — needs to be swapped in.
-- IdealWeekOverlay component exists but is not rendered in the week view yet — needs to be integrated.
-- Weather hook exists but is not displayed in any view yet — needs to be wired into week/day headers.
-- **Phase 24 — Supabase migration not yet applied.** Run `supabase/migrations/20260403300000_phase24_schema.sql` against the database to add password_hash, role, family_id, subscription columns to users table and create invites table.
-- **Phase 24 — Stripe not configured.** Need to create a Stripe account, get API keys, add STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET env vars to Vercel. Create products/prices in Stripe dashboard.
-- **Phase 24 — Custom domain not set.** App is at personal-calendar-gules.vercel.app. Need to buy and configure a custom domain (e.g. familydashboard.app) in Vercel settings.
-- **Phase 24 — Email sending not implemented.** Invite emails and welcome emails need an email service (Resend, SendGrid, etc). Currently invite links are returned in the API response only.
+- **Landing page redirect**: The root `/` URL redirects to `/login` due to NextAuth v5 middleware in Next.js 16. The landing page code exists at `app/page.tsx` but gets intercepted. Workaround: visitors can go directly to `/signup`. Fix options: merge landing content into login page, or use Next.js 16 proxy convention.
+- **Google OAuth in Testing mode**: Only test users can sign in. To open to everyone, publish the app on the Audience page (may require Google verification).
+- **Azure client secret expires 4/1/2028**.
+- **Stripe not configured**: Need Stripe account, API keys (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET), and products/prices created in Stripe dashboard. Add keys to Vercel env vars.
+- **Custom domain not set**: App is at personal-calendar-gules.vercel.app. Need custom domain configured in Vercel.
+- **Email sending not implemented**: Invite and welcome emails need an email service (Resend, SendGrid, etc). Currently invite links are returned in API response only.
+- **DraggableEvent not swapped in**: TimeGrid still uses simpler EventBlock.
+- **IdealWeekOverlay not rendered**: Component exists but not integrated into week view.
+
+## Architecture Rules (AGENTS.md)
+- This is Next.js 16 — APIs and conventions may differ from training data
+- Read relevant docs in `node_modules/next/dist/docs/` before writing code
+- Heed deprecation notices (middleware is deprecated, use proxy)
 
 ## Session Log
 | Date | What was done |
 |------|--------------|
-| 2026-04-01 | Phase 1 confirmed complete |
-| 2026-04-01 | Phase 2 complete — auth, middleware, login page, schema |
-| 2026-04-02 | Supabase schema applied (all 8 tables confirmed in dashboard) |
-| 2026-04-02 | Google Cloud project created, Calendar API enabled, OAuth configured |
-| 2026-04-02 | Phase 3 complete — Google credentials, token refresh, event CRUD, hook |
-| 2026-04-02 | Phase 4 complete — Outlook token refresh, Graph CRUD, 3 API routes, hook |
-| 2026-04-02 | Phase 4 Azure portal — App registered, client secret created (24mo), API permissions granted |
-| 2026-04-02 | Phase 5 complete — merge utility, unified hook, unified API route |
-| 2026-04-02 | Phase 6 complete — Realtime helpers, useRealtimeEvents hook |
-| 2026-04-02 | Phase 7 complete — AppShell, Sidebar, Topbar, dashboard layout |
-| 2026-04-03 | Phases 8-11 — All four calendar views (week, day, month, agenda) |
-| 2026-04-03 | Phases 12-14 — Drag reschedule, NLP quick add, event detail drawer |
-| 2026-04-03 | Phases 15-17 — Templates API, ideal week API + overlay, task sidebar + API |
-| 2026-04-03 | Phases 18-19 — Weather API + hook, focus/blocked event types |
-| 2026-04-03 | Phase 20 — Settings panel |
-| 2026-04-03 | Phase 21 — Touch optimization CSS |
-| 2026-04-03 | Phase 22 — PWA manifest + service worker |
-| 2026-04-03 | Portrait display fix — manifest orientation, font scaling, sidebar always expanded |
-| 2026-04-03 | Google test user added (getslimwithaaron@gmail.com) |
-| 2026-04-03 | Azure verified open to all Microsoft accounts |
-| 2026-04-03 | Code merged to main, pushed to GitHub, build verified |
-| 2026-04-03 | Comprehensive handoff BUILD_STATE.md written |
-| 2026-04-03 | Phase 24 Step 1 — Deployed to Vercel (personal-calendar-gules.vercel.app) |
-| 2026-04-03 | Phase 24 Step 1 — All env vars added to Vercel, OAuth redirect URIs updated |
-| 2026-04-03 | Phase 24 Step 2 — Public landing page with features, pricing, CTAs |
-| 2026-04-03 | Phase 24 Step 3 — Self-service signup with email/password + credentials auth |
-| 2026-04-03 | Phase 24 Step 4 — Family invite system (invite by email, accept page) |
-| 2026-04-03 | Phase 24 Step 5 — Stripe billing integration + webhook handler |
-| 2026-04-03 | Phase 24 Step 6 — 3-step onboarding wizard |
-| 2026-04-03 | Phase 24 Step 7 — PWA install prompt banner |
-| 2026-04-03 | Phase 24 Step 8 — Admin dashboard at /admin |
+| 2026-04-01 | Phases 1-2 complete — scaffold, auth, middleware, login, schema |
+| 2026-04-02 | Phases 3-7 complete — Google/Outlook OAuth, merge layer, realtime, app shell |
+| 2026-04-03 | Phases 8-22 complete — All views, drag, NLP, drawer, templates, tasks, weather, settings, touch, PWA |
+| 2026-04-03 | Widgets built — 14 floating widgets with APIs, widget manager, widget panel |
+| 2026-04-03 | Family alert system — alerts API, overlay, alert page |
+| 2026-04-03 | Launch scripts — bat, ps1, vbs for kiosk mode |
+| 2026-04-03 | Exit fullscreen button + Alt+F4 shortcut added to settings/AppShell |
+| 2026-04-03 | Phase 24 planned in BUILD_STATE.md |
+| 2026-04-03 | Phase 24 Step 1 — Deployed to Vercel, env vars set, OAuth redirect URIs updated |
+| 2026-04-03 | Phase 24 Steps 2-8 — Landing page, signup, invites, Stripe billing, onboarding, PWA prompt, admin dashboard |
+| 2026-04-03 | GitHub repo made public (required for Vercel Hobby plan deploys) |
+| 2026-04-04 | Supabase Phase 24 migration applied — users columns + invites table confirmed |
+| 2026-04-04 | BUILD_STATE.md comprehensively rewritten with all features, widgets, credentials |
