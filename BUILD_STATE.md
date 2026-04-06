@@ -10,8 +10,15 @@
 
 ## Current Status
 PHASE: Phase 24 — Shareable product (code complete, migration applied)
-LAST SESSION: 2026-04-04
-NEXT ACTION: Set up Stripe account + API keys, fix landing page / redirect, buy custom domain
+LAST SESSION: 2026-04-05
+NEXT ACTION: Test signup flow end-to-end, fix landing page redirect, configure Stripe live keys when ready
+
+## Virgo Industries Architecture Rule
+**Each Virgo Industries product MUST stay in a separate codebase and separate database.**
+- FamilyCal = personal-calendar repo + Supabase project mivtjdbjztnvtjixhwmh
+- DTC sites = separate repos + separate databases
+- Studio platform = planned as a separate build with its own repo and database
+- Never mix product data or codebases across projects
 
 ## What Is Working
 - All 24 build phases are code-complete and TypeScript-clean
@@ -37,7 +44,9 @@ NEXT ACTION: Set up Stripe account + API keys, fix landing page / redirect, buy 
 - TaskSidebar wired into AppShell
 - Exit fullscreen button on settings page + Alt+F4 keyboard shortcut
 - Launch scripts for kiosk mode (launch-calendar.bat, .ps1, .vbs)
+- Startup automation: launch-calendar.vbs runs on Windows startup via Task Scheduler
 - App designed for 42" portrait touch screen
+- Domain: avirgoindustries.com (Namecheap — active, DNS configured)
 
 ## What Has NOT Been Tested Yet
 - Nobody has signed in with Google or Microsoft on Vercel yet — OAuth flows untested live
@@ -119,14 +128,38 @@ NEXT_PUBLIC_SUPABASE_URL=https://mivtjdbjztnvtjixhwmh.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMDEwMDgsImV4cCI6MjA5MDY3NzAwOH0.TW3fHgAp_Tuk3Q5GOrMEhIGBe7G29u0DNqNf1liJSM8
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTEwMTAwOCwiZXhwIjoyMDkwNjc3MDA4fQ.XEtu3V0njgROSG9VkQy_0gQQakEnm6GWusxPscwszyg
 SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
-# STRIPE_SECRET_KEY=   (not yet configured — need Stripe account)
-# STRIPE_WEBHOOK_SECRET= (not yet configured)
+STRIPE_SECRET_KEY=sk_test_... (test mode — add live key when ready to go live)
+STRIPE_WEBHOOK_SECRET=whsec_... (configure in Stripe dashboard > Webhooks)
 ```
+
+### Stripe
+- Dashboard: https://dashboard.stripe.com
+- Login: Google — getslimwithaaron@gmail.com
+- Mode: Test (use test keys for development, switch to live when ready)
+- Plans: $4.99/month, $39/year
+- 14-day free trial, no credit card required
+- Webhook endpoint: https://personal-calendar-gules.vercel.app/api/billing/webhook
+- Status: Billing code built, test keys configured, not yet tested end-to-end
+
+### EmailOctopus
+- Website: emailoctopus.com
+- Login: getslimwithaaron@gmail.com
+- Password: AvirgoDTCP420!
+- Plan: Free — 3 form limit, 2500 subscribers max
+- Status: Account exists, not yet integrated into FamilyCal (invite/welcome emails planned)
+
+### Namecheap
+- Website: namecheap.com
+- Username: AvirgoDTC1
+- Password: AvirgoDTCP0420!
+- Email: getslimwithaaron@gmail.com
+- Domains: avirgoindustries.com (ACTIVE), plus 21 exact-match domains
+- Status: Domains active, DNS configured
 
 ### Vercel Environment Variables (Production)
 All of the above are set in Vercel EXCEPT:
 - NEXTAUTH_URL is set to https://personal-calendar-gules.vercel.app
-- STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET are NOT yet added
+- STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET need to be added from Stripe dashboard
 
 ### Google Cloud Console
 - Console URL: https://console.cloud.google.com/apis/credentials?project=personal-calendar-app-492105
@@ -322,9 +355,9 @@ npm run start
 - **Landing page redirect**: The root `/` URL redirects to `/login` due to NextAuth v5 middleware in Next.js 16. The landing page code exists at `app/page.tsx` but gets intercepted. Workaround: visitors can go directly to `/signup`. Fix options: merge landing content into login page, or use Next.js 16 proxy convention.
 - **Google OAuth in Testing mode**: Only test users can sign in. To open to everyone, publish the app on the Audience page (may require Google verification).
 - **Azure client secret expires 4/1/2028**.
-- **Stripe not configured**: Need Stripe account, API keys (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET), and products/prices created in Stripe dashboard. Add keys to Vercel env vars.
-- **Custom domain not set**: App is at personal-calendar-gules.vercel.app. Need custom domain configured in Vercel.
-- **Email sending not implemented**: Invite and welcome emails need an email service (Resend, SendGrid, etc). Currently invite links are returned in API response only.
+- **Stripe in test mode**: Billing code is built. Test keys configured. Need to create products/prices in Stripe dashboard, test checkout flow, then switch to live keys when ready.
+- **Custom domain**: avirgoindustries.com is owned and active on Namecheap. Needs to be connected to Vercel project.
+- **Email sending not implemented**: Invite and welcome emails planned via EmailOctopus. Currently invite links are returned in API response only.
 - **DraggableEvent not swapped in**: TimeGrid still uses simpler EventBlock.
 - **IdealWeekOverlay not rendered**: Component exists but not integrated into week view.
 
@@ -332,6 +365,10 @@ npm run start
 - This is Next.js 16 — APIs and conventions may differ from training data
 - Read relevant docs in `node_modules/next/dist/docs/` before writing code
 - Heed deprecation notices (middleware is deprecated, use proxy)
+- **Virgo Industries rule: Each product gets its own codebase and database. Never mix.**
+
+## Future Plans
+- **Studio Platform**: Planned as a completely separate build with its own repo and database (per Virgo Industries architecture rule). Not part of the FamilyCal codebase.
 
 ## Session Log
 | Date | What was done |
@@ -349,3 +386,5 @@ npm run start
 | 2026-04-03 | GitHub repo made public (required for Vercel Hobby plan deploys) |
 | 2026-04-04 | Supabase Phase 24 migration applied — users columns + invites table confirmed |
 | 2026-04-04 | BUILD_STATE.md comprehensively rewritten with all features, widgets, credentials |
+| 2026-04-05 | BUILD_STATE.md updated with Stripe, domain, EmailOctopus, Namecheap, Virgo Industries architecture rule, studio platform plan |
+| 2026-04-05 | Google Doc rewritten to match BUILD_STATE.md |
