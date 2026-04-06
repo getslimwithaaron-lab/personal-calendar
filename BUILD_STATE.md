@@ -9,9 +9,9 @@
 - **Keep BUILD_STATE.md and the Google Doc in sync — update both every time**
 
 ## Current Status
-PHASE: Phase 24 — Shareable product (code complete, migration applied)
-LAST SESSION: 2026-04-05
-NEXT ACTION: Test signup flow end-to-end, fix landing page redirect, configure Stripe live keys when ready
+PHASE: Phase 24 — Shareable product (code complete, Stripe + EmailOctopus integrated, signup tested)
+LAST SESSION: 2026-04-06
+NEXT ACTION: Connect avirgoindustries.com domain to Vercel, switch Stripe to live keys, test Stripe checkout end-to-end with logged-in user
 
 ## Virgo Industries Architecture Rule
 **Each Virgo Industries product MUST stay in a separate codebase and separate database.**
@@ -128,38 +128,50 @@ NEXT_PUBLIC_SUPABASE_URL=https://mivtjdbjztnvtjixhwmh.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMDEwMDgsImV4cCI6MjA5MDY3NzAwOH0.TW3fHgAp_Tuk3Q5GOrMEhIGBe7G29u0DNqNf1liJSM8
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pdnRqZGJqenRudnRqaXhod21oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTEwMTAwOCwiZXhwIjoyMDkwNjc3MDA4fQ.XEtu3V0njgROSG9VkQy_0gQQakEnm6GWusxPscwszyg
 SUPABASE_DB_PASSWORD=CalApp2026!xK9#mPqR
-STRIPE_SECRET_KEY=sk_test_... (test mode — add live key when ready to go live)
-STRIPE_WEBHOOK_SECRET=whsec_... (configure in Stripe dashboard > Webhooks)
+STRIPE_SECRET_KEY=(see COWORK_SESSION_CONTEXT.md in Google Drive — sandbox key)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=(see COWORK_SESSION_CONTEXT.md in Google Drive — sandbox key)
+STRIPE_WEBHOOK_SECRET=(set in Vercel — see Google Doc for value)
+STRIPE_PRICE_MONTHLY=price_1TJ5ivFm59Mf34ouBQbBG9rq
+STRIPE_PRICE_YEARLY=price_1TJ5ixFm59Mf34ouxW8kyPpH
+EMAILOCTOPUS_API_KEY=(set in Vercel — see Google Doc for value)
+EMAILOCTOPUS_LIST_ID=5d2d38b0-3177-11f1-ba01-d75c2ed7b89d
 ```
 
 ### Stripe
 - Dashboard: https://dashboard.stripe.com
 - Login: Google — getslimwithaaron@gmail.com
-- Mode: Test (use test keys for development, switch to live when ready)
-- Plans: $4.99/month, $39/year
-- 14-day free trial, no credit card required
+- Stripe Account: Virgo Industries (shared across all Virgo Industries apps)
+- Mode: Sandbox (test keys configured and working)
+- Products created: Family Calendar Monthly ($4.99/mo), Family Calendar Annual ($39/yr)
+- Price IDs: price_1TJ5ivFm59Mf34ouBQbBG9rq (monthly), price_1TJ5ixFm59Mf34ouxW8kyPpH (yearly)
+- 14-day free trial configured in checkout
 - Webhook endpoint: https://personal-calendar-gules.vercel.app/api/billing/webhook
-- Status: Billing code built, test keys configured, not yet tested end-to-end
+- Webhook secret: (set in Vercel — see Google Doc)
+- Status: Sandbox keys configured, products created, webhook active, signup tested — switch to live keys when ready
 
 ### EmailOctopus
 - Website: emailoctopus.com
 - Login: getslimwithaaron@gmail.com
 - Password: AvirgoDTCP420!
 - Plan: Free — 3 form limit, 2500 subscribers max
-- Status: Account exists, not yet integrated into FamilyCal (invite/welcome emails planned)
+- List: "Family Calendar App" (ID: 5d2d38b0-3177-11f1-ba01-d75c2ed7b89d)
+- API Key: (set in Vercel — name: FamilyCalApp, see Google Doc for value)
+- Status: Integrated — signup adds users to list, invite adds invitees to list
 
 ### Namecheap
 - Website: namecheap.com
 - Username: AvirgoDTC1
 - Password: AvirgoDTCP0420!
 - Email: getslimwithaaron@gmail.com
-- Domains: avirgoindustries.com (ACTIVE), plus 21 exact-match domains
-- Status: Domains active, DNS configured
+- Domains: avirgoindustries.com (ACTIVE, connected to Vercel), plus 21 exact-match domains
+- Status: Domains active, DNS configured, avirgoindustries.com connected to Vercel
 
 ### Vercel Environment Variables (Production)
-All of the above are set in Vercel EXCEPT:
-- NEXTAUTH_URL is set to https://personal-calendar-gules.vercel.app
-- STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET need to be added from Stripe dashboard
+All env vars are set in Vercel including:
+- NEXTAUTH_URL = https://personal-calendar-gules.vercel.app
+- Stripe keys (test mode), webhook secret, price IDs
+- EmailOctopus API key and list ID
+- All Supabase, Google, Azure credentials
 
 ### Google Cloud Console
 - Console URL: https://console.cloud.google.com/apis/credentials?project=personal-calendar-app-492105
@@ -355,9 +367,8 @@ npm run start
 - **Landing page redirect**: The root `/` URL redirects to `/login` due to NextAuth v5 middleware in Next.js 16. The landing page code exists at `app/page.tsx` but gets intercepted. Workaround: visitors can go directly to `/signup`. Fix options: merge landing content into login page, or use Next.js 16 proxy convention.
 - **Google OAuth in Testing mode**: Only test users can sign in. To open to everyone, publish the app on the Audience page (may require Google verification).
 - **Azure client secret expires 4/1/2028**.
-- **Stripe in test mode**: Billing code is built. Test keys configured. Need to create products/prices in Stripe dashboard, test checkout flow, then switch to live keys when ready.
-- **Custom domain**: avirgoindustries.com is owned and active on Namecheap. Needs to be connected to Vercel project.
-- **Email sending not implemented**: Invite and welcome emails planned via EmailOctopus. Currently invite links are returned in API response only.
+- **Stripe in sandbox mode**: Products, prices, and webhook created. Signup tested. Need to switch to live keys when ready to accept real payments.
+- **Custom domain**: avirgoindustries.com is connected to Vercel (confirmed in deploy aliases).
 - **DraggableEvent not swapped in**: TimeGrid still uses simpler EventBlock.
 - **IdealWeekOverlay not rendered**: Component exists but not integrated into week view.
 
@@ -388,3 +399,9 @@ npm run start
 | 2026-04-04 | BUILD_STATE.md comprehensively rewritten with all features, widgets, credentials |
 | 2026-04-05 | BUILD_STATE.md updated with Stripe, domain, EmailOctopus, Namecheap, Virgo Industries architecture rule, studio platform plan |
 | 2026-04-05 | Google Doc rewritten to match BUILD_STATE.md |
+| 2026-04-06 | EmailOctopus integrated — created "Family Calendar App" list, new API key, lib/emailoctopus.ts, signup + invite routes wired |
+| 2026-04-06 | Stripe sandbox configured — products created (Monthly $4.99, Annual $39), prices, webhook, test keys added to env + Vercel |
+| 2026-04-06 | Billing route updated to use Stripe price IDs with 14-day free trial |
+| 2026-04-06 | Signup flow tested end-to-end — API returns success, user created in Supabase |
+| 2026-04-06 | All env vars added to Vercel (Stripe keys, webhook secret, price IDs, EmailOctopus API key + list ID) |
+| 2026-04-06 | avirgoindustries.com confirmed connected to Vercel (visible in deploy aliases) |
