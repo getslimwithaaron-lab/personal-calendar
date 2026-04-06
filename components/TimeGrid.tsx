@@ -1,10 +1,9 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { format, isSameDay, isToday, startOfDay } from 'date-fns'
-import { CalendarEvent, IdealWeekFrame } from '@/types'
+import { CalendarEvent } from '@/types'
 import { DraggableEvent } from './DraggableEvent'
-import { IdealWeekOverlay } from './IdealWeekOverlay'
 
 const HOUR_HEIGHT = 60 // px per hour
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
@@ -15,19 +14,10 @@ interface TimeGridProps {
   onEventClick?: (event: CalendarEvent) => void
   onSlotClick?: (date: Date, hour: number) => void
   onReschedule?: (event: CalendarEvent, newStart: Date, newEnd: Date) => void
-  idealWeekFrames?: IdealWeekFrame[]
-  showIdealWeek?: boolean
+  renderDayBackground?: (day: Date) => React.ReactNode
 }
 
-export function TimeGrid({
-  days,
-  events,
-  onEventClick,
-  onSlotClick,
-  onReschedule,
-  idealWeekFrames = [],
-  showIdealWeek = false,
-}: TimeGridProps) {
+export function TimeGrid({ days, events, onEventClick, onSlotClick, onReschedule, renderDayBackground }: TimeGridProps) {
   const eventsByDay = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>()
     for (const day of days) {
@@ -47,7 +37,7 @@ export function TimeGrid({
       {/* All-day row */}
       {allDayEvents.length > 0 && (
         <div className="flex border-b border-slate-800 shrink-0">
-          <div className="w-10 sm:w-14 shrink-0" />
+          <div className="w-14 shrink-0" />
           <div className="flex flex-1">
             {days.map(day => {
               const key = format(day, 'yyyy-MM-dd')
@@ -75,11 +65,11 @@ export function TimeGrid({
       <div className="flex-1 overflow-y-auto scroll-container" id="time-grid-scroll">
         <div className="flex relative" style={{ height: 24 * HOUR_HEIGHT }}>
           {/* Hour labels */}
-          <div className="w-10 sm:w-14 shrink-0 relative">
+          <div className="w-14 shrink-0 relative">
             {HOURS.map(h => (
               <div
                 key={h}
-                className="absolute left-0 right-0 text-[10px] sm:text-xs text-slate-500 text-right pr-1 sm:pr-2"
+                className="absolute left-0 right-0 text-xs text-slate-500 text-right pr-2"
                 style={{ top: h * HOUR_HEIGHT - 6 }}
               >
                 {h === 0 ? '' : format(new Date(2000, 0, 1, h), 'h a')}
@@ -94,11 +84,6 @@ export function TimeGrid({
               const dayEvents = eventsByDay.get(key) ?? []
               return (
                 <div key={key} className="flex-1 min-w-0 relative border-l border-slate-800/50 first:border-l-0">
-                  {/* Ideal week overlay */}
-                  {showIdealWeek && idealWeekFrames.length > 0 && (
-                    <IdealWeekOverlay frames={idealWeekFrames} dayOfWeek={day.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6} />
-                  )}
-
                   {/* Hour lines */}
                   {HOURS.map(h => (
                     <div
@@ -109,10 +94,13 @@ export function TimeGrid({
                     />
                   ))}
 
+                  {/* Day background overlay (e.g. ideal week) */}
+                  {renderDayBackground?.(day)}
+
                   {/* Now line */}
                   {isToday(day) && <NowLine />}
 
-                  {/* Events — using DraggableEvent */}
+                  {/* Events */}
                   {dayEvents.map(ev => (
                     <DraggableEvent
                       key={ev.id}
@@ -133,20 +121,9 @@ export function TimeGrid({
 }
 
 function NowLine() {
-  const [top, setTop] = useState<number | null>(null)
-
-  useEffect(() => {
-    const update = () => {
-      const now = new Date()
-      const mins = now.getHours() * 60 + now.getMinutes()
-      setTop((mins / 60) * HOUR_HEIGHT)
-    }
-    update()
-    const id = setInterval(update, 60_000)
-    return () => clearInterval(id)
-  }, [])
-
-  if (top === null) return null
+  const now = new Date()
+  const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes()
+  const top = (minutesSinceMidnight / 60) * HOUR_HEIGHT
 
   return (
     <div className="absolute left-0 right-0 z-20 pointer-events-none" style={{ top }}>
