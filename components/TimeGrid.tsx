@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
-import { format, isSameDay, isToday, differenceInMinutes, startOfDay } from 'date-fns'
+import { format, isSameDay, isToday, startOfDay } from 'date-fns'
 import { CalendarEvent } from '@/types'
+import { DraggableEvent } from './DraggableEvent'
 
 const HOUR_HEIGHT = 60 // px per hour
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
@@ -12,9 +13,11 @@ interface TimeGridProps {
   events: CalendarEvent[]
   onEventClick?: (event: CalendarEvent) => void
   onSlotClick?: (date: Date, hour: number) => void
+  onReschedule?: (event: CalendarEvent, newStart: Date, newEnd: Date) => void
+  renderDayBackground?: (day: Date) => React.ReactNode
 }
 
-export function TimeGrid({ days, events, onEventClick, onSlotClick }: TimeGridProps) {
+export function TimeGrid({ days, events, onEventClick, onSlotClick, onReschedule, renderDayBackground }: TimeGridProps) {
   const eventsByDay = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>()
     for (const day of days) {
@@ -91,12 +94,21 @@ export function TimeGrid({ days, events, onEventClick, onSlotClick }: TimeGridPr
                     />
                   ))}
 
+                  {/* Day background overlay (e.g. ideal week) */}
+                  {renderDayBackground?.(day)}
+
                   {/* Now line */}
                   {isToday(day) && <NowLine />}
 
                   {/* Events */}
                   {dayEvents.map(ev => (
-                    <EventBlock key={ev.id} event={ev} day={day} onClick={() => onEventClick?.(ev)} />
+                    <DraggableEvent
+                      key={ev.id}
+                      event={ev}
+                      dayStart={startOfDay(day)}
+                      onClick={() => onEventClick?.(ev)}
+                      onReschedule={onReschedule}
+                    />
                   ))}
                 </div>
               )
@@ -105,38 +117,6 @@ export function TimeGrid({ days, events, onEventClick, onSlotClick }: TimeGridPr
         </div>
       </div>
     </div>
-  )
-}
-
-function EventBlock({ event, day, onClick }: { event: CalendarEvent; day: Date; onClick: () => void }) {
-  const start = new Date(event.start)
-  const end = new Date(event.end)
-  const dayStart = startOfDay(day)
-  const topMin = Math.max(0, differenceInMinutes(start, dayStart))
-  const durationMin = Math.max(15, differenceInMinutes(end, start))
-
-  const top = (topMin / 60) * HOUR_HEIGHT
-  const height = Math.max(16, (durationMin / 60) * HOUR_HEIGHT)
-
-  return (
-    <button
-      onClick={onClick}
-      className="absolute left-0.5 right-0.5 rounded px-1.5 py-0.5 text-xs overflow-hidden cursor-pointer z-10 text-left"
-      style={{
-        top,
-        height,
-        backgroundColor: event.color + '33',
-        borderLeft: `3px solid ${event.color}`,
-        color: event.color,
-      }}
-    >
-      <div className="font-medium truncate">{event.title}</div>
-      {height > 30 && (
-        <div className="text-[10px] opacity-70">
-          {format(start, 'h:mm a')}
-        </div>
-      )}
-    </button>
   )
 }
 

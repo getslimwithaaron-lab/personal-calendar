@@ -1,10 +1,14 @@
 'use client'
 
-import { useMemo, useEffect } from 'react'
-import { startOfWeek, endOfWeek, addDays, format, isToday } from 'date-fns'
+import { useMemo, useEffect, useCallback } from 'react'
+import { startOfWeek, endOfWeek, addDays, format, isToday, getDay } from 'date-fns'
 import { useCalendarContext } from '@/components/CalendarProvider'
 import { TimeGrid } from '@/components/TimeGrid'
 import { useCalendarEvents } from '@/hooks/useCalendarEvents'
+import { useSettings } from '@/hooks/useSettings'
+import { useIdealWeek } from '@/hooks/useIdealWeek'
+import { IdealWeekOverlay } from '@/components/IdealWeekOverlay'
+import { rescheduleEvent } from '@/lib/events/reschedule'
 
 export default function WeekPage() {
   const { currentDate, setSelectedEvent, setDrawerOpen } = useCalendarContext()
@@ -13,10 +17,23 @@ export default function WeekPage() {
   const weekEnd = useMemo(() => endOfWeek(currentDate, { weekStartsOn: 0 }), [currentDate])
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)), [weekStart])
 
-  const { events, isLoading } = useCalendarEvents({
+  const { events, isLoading, refetch } = useCalendarEvents({
     from: weekStart,
     to: weekEnd,
   })
+
+  const { settings } = useSettings()
+  const { frames } = useIdealWeek()
+
+  const handleReschedule = useCallback(async (event: Parameters<typeof rescheduleEvent>[0], newStart: Date, newEnd: Date) => {
+    const ok = await rescheduleEvent(event, newStart, newEnd)
+    if (ok) refetch()
+  }, [refetch])
+
+  const renderDayBackground = useCallback((day: Date) => {
+    if (!settings.showIdealWeek) return null
+    return <IdealWeekOverlay frames={frames} dayOfWeek={getDay(day)} />
+  }, [settings.showIdealWeek, frames])
 
   // Auto-scroll to current hour on mount
   useEffect(() => {
@@ -65,6 +82,8 @@ export default function WeekPage() {
           setSelectedEvent(ev)
           setDrawerOpen(true)
         }}
+        onReschedule={handleReschedule}
+        renderDayBackground={renderDayBackground}
       />
     </div>
   )
