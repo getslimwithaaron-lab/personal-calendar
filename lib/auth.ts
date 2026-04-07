@@ -42,34 +42,20 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
   }
 }
 
-console.log('[auth] Initializing NextAuth with:', {
-  googleClientId: process.env.GOOGLE_CLIENT_ID ? `${process.env.GOOGLE_CLIENT_ID.substring(0, 15)}... (${process.env.GOOGLE_CLIENT_ID.length} chars)` : 'MISSING',
-  googleSecret: process.env.GOOGLE_CLIENT_SECRET ? `set (${process.env.GOOGLE_CLIENT_SECRET.length} chars)` : 'MISSING',
-  nextauthSecret: process.env.NEXTAUTH_SECRET ? 'set' : 'MISSING',
-  authSecret: process.env.AUTH_SECRET ? 'set' : 'MISSING',
-  nextauthUrl: process.env.NEXTAUTH_URL,
-})
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // Don't auto-protect routes — we handle this in middleware.ts
   trustHost: true,
 
-  // ── Providers ───────────────────────────────────────────────────────────────
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
-        url: 'https://accounts.google.com/o/oauth2/v2/auth',
         params: {
           scope: 'openid email profile https://www.googleapis.com/auth/calendar',
           access_type: 'offline',
           prompt: 'consent',
-          response_type: 'code',
         },
       },
-      token: { url: 'https://oauth2.googleapis.com/token' },
-      userinfo: { url: 'https://openidconnect.googleapis.com/v1/userinfo' },
     }),
     MicrosoftEntraID({
       clientId: process.env.AZURE_AD_CLIENT_ID ?? '',
