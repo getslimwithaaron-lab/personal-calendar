@@ -42,6 +42,14 @@ async function getSupabaseUserId(email: string): Promise<string | null> {
   }
 }
 
+console.log('[auth] Initializing NextAuth with:', {
+  googleClientId: process.env.GOOGLE_CLIENT_ID ? `${process.env.GOOGLE_CLIENT_ID.substring(0, 15)}... (${process.env.GOOGLE_CLIENT_ID.length} chars)` : 'MISSING',
+  googleSecret: process.env.GOOGLE_CLIENT_SECRET ? `set (${process.env.GOOGLE_CLIENT_SECRET.length} chars)` : 'MISSING',
+  nextauthSecret: process.env.NEXTAUTH_SECRET ? 'set' : 'MISSING',
+  authSecret: process.env.AUTH_SECRET ? 'set' : 'MISSING',
+  nextauthUrl: process.env.NEXTAUTH_URL,
+})
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Don't auto-protect routes — we handle this in middleware.ts
   trustHost: true,
