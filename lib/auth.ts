@@ -60,12 +60,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET,
       authorization: {
+        url: 'https://accounts.google.com/o/oauth2/v2/auth',
         params: {
           scope: 'openid email profile https://www.googleapis.com/auth/calendar',
           access_type: 'offline',
           prompt: 'consent',
+          response_type: 'code',
         },
       },
+      token: { url: 'https://oauth2.googleapis.com/token' },
+      userinfo: { url: 'https://openidconnect.googleapis.com/v1/userinfo' },
     }),
     MicrosoftEntraID({
       clientId: process.env.AZURE_AD_CLIENT_ID ?? '',
