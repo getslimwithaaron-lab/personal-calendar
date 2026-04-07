@@ -9,9 +9,9 @@
 - **Keep BUILD_STATE.md and the Google Doc in sync — update both every time**
 
 ## Current Status
-PHASE: Phase 24 — Shareable product (code complete, Stripe + EmailOctopus integrated, signup tested)
+PHASE: Phase 25 — QA + bugfixes (OAuth fixed, UI redesigned, invite fixed, landing page premium)
 LAST SESSION: 2026-04-06
-NEXT ACTION: Connect avirgoindustries.com domain to Vercel, switch Stripe to live keys, test Stripe checkout end-to-end with logged-in user
+NEXT ACTION: Switch Stripe to live keys, test Stripe checkout with logged-in user, Google verification (needs privacy policy + terms pages)
 
 ## Virgo Industries Architecture Rule
 **Each Virgo Industries product MUST stay in a separate codebase and separate database.**
@@ -168,7 +168,10 @@ EMAILOCTOPUS_LIST_ID=5d2d38b0-3177-11f1-ba01-d75c2ed7b89d
 
 ### Vercel Environment Variables (Production)
 All env vars are set in Vercel including:
-- NEXTAUTH_URL = https://personal-calendar-gules.vercel.app
+- NEXTAUTH_URL = https://www.avirgoindustries.com (must use www — site redirects to www)
+- GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET set correctly (2026-04-06)
+- Google OAuth redirect URIs: localhost, vercel app, avirgoindustries.com, AND www.avirgoindustries.com
+- Google OAuth LOGIN CONFIRMED WORKING (2026-04-06)
 - Stripe keys (test mode), webhook secret, price IDs
 - EmailOctopus API key and list ID
 - All Supabase, Google, Azure credentials
@@ -179,7 +182,7 @@ All env vars are set in Vercel including:
 - Project ID: personal-calendar-app-492105
 - OAuth Client ID: 650675069252-7mk633cnopcjuclf68222l2hcb4dt6rp.apps.googleusercontent.com
 - OAuth Client Secret: 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
-- Redirect URIs: http://localhost:3000/api/auth/callback/google AND https://personal-calendar-gules.vercel.app/api/auth/callback/google
+- Redirect URIs: http://localhost:3000/api/auth/callback/google AND https://personal-calendar-gules.vercel.app/api/auth/callback/google AND https://avirgoindustries.com/api/auth/callback/google (NEEDS TO BE ADDED MANUALLY IN GOOGLE CLOUD CONSOLE)
 - Google Calendar API: Enabled
 - Publishing status: Testing (only test users can sign in)
 - Test users: getslimwithaaron@gmail.com
@@ -364,8 +367,9 @@ npm run start
 5. Open localhost:3000 in Chrome, install as PWA, press F11 for fullscreen
 
 ## Known Issues / Blockers
-- **Landing page redirect**: The root `/` URL redirects to `/login` due to NextAuth v5 middleware in Next.js 16. The landing page code exists at `app/page.tsx` but gets intercepted. Workaround: visitors can go directly to `/signup`. Fix options: merge landing content into login page, or use Next.js 16 proxy convention.
+- **Google OAuth redirect URIs**: All 4 added (localhost, vercel, avirgoindustries.com, www.avirgoindustries.com). Login working.
 - **Google OAuth in Testing mode**: Only test users can sign in. To open to everyone, publish the app on the Audience page (may require Google verification).
+- **Supabase migration DONE**: bg_color column added to widget_layouts, orphan account deleted.
 - **Azure client secret expires 4/1/2028**.
 - **Stripe in sandbox mode**: Products, prices, and webhook created. Signup tested. Need to switch to live keys when ready to accept real payments.
 - **Custom domain**: avirgoindustries.com is connected to Vercel (confirmed in deploy aliases).
@@ -405,3 +409,10 @@ npm run start
 | 2026-04-06 | Signup flow tested end-to-end — API returns success, user created in Supabase |
 | 2026-04-06 | All env vars added to Vercel (Stripe keys, webhook secret, price IDs, EmailOctopus API key + list ID) |
 | 2026-04-06 | avirgoindustries.com confirmed connected to Vercel (visible in deploy aliases) |
+| 2026-04-06 | Google OAuth fix: re-added GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET to Vercel, updated NEXTAUTH_URL to https://avirgoindustries.com |
+| 2026-04-06 | Invite auth fix: changed session.user.id to session.supabaseUserId in invite route (was causing Unauthorized errors) |
+| 2026-04-06 | UI redesign: calendar is now a floating widget on a full-screen canvas alongside all other widgets. Desktop = free-floating, mobile = swipeable screens |
+| 2026-04-06 | Widget color customization: 12-color palette picker in every widget header menu, saves per-widget per-user to Supabase |
+| 2026-04-06 | Landing page redesigned: premium dark theme, "Your family. One screen." headline, app mockup, feature cards, pricing with "Best value" badge, Virgo Industries footer |
+| 2026-04-06 | Sidebar removed from dashboard — replaced with in-widget view tabs (Week/Day/Month/Agenda) inside the Calendar widget |
+| 2026-04-06 | Migration script at scripts/apply-migration.mjs — adds bg_color column + deletes orphan account (needs manual run) |
